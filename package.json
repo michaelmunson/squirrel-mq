@@ -1,0 +1,36 @@
+{
+  "name": "squirrel-mq",
+  "version": "0.0.1",
+  "description": "SQL Message Queue",
+  "main": "src/index.ts",
+  "files": [
+    "src/**/*"
+  ],
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "create-docs": "typedoc --out ./docs ./src/index.ts",
+    "test": "jest"
+  },
+  "author": "Michael Munson",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/michaelmunson/mqsql"
+  },
+  "dependencies": {
+    "mysql2": "^3.7.11"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.7",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typedoc": "^0.26.6",
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "mysql2": "^3.7.11"
+  }
+}
