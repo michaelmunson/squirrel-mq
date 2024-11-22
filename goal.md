@@ -39,15 +39,26 @@ const db = createDb('name', {
 });
 ```
 
-
-
-
-
-
-
-
-
-
-
-
 # DB Creation Option 2
+```typescript
+
+
+class User extends Table {
+  @PrimaryKey
+  id = id()
+  name = varchar(255)
+  job:Job = json()
+}
+
+class Pet extends Table {
+  @PrimaryKey
+  id = id()
+  name = varchar(255)
+  @ForeignKey(User)
+  owner = id()
+  @Authq
+  authorization()
+}
+
+export {User}
+```
