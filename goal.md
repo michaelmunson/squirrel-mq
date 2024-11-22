@@ -1,5 +1,5 @@
 
-sql side
+# DB Creation Option 1
 ```typescript
 import { Schema, Table, Database } from '...';
 import { id, varchar, timestamp, int, boolean, float, double, json } from '...';
@@ -33,36 +33,21 @@ const schema = createSchema({
   },
 });
 
-const schema = createSchema([
-  table('user', [
-    column('id', id({ primaryKey: true })),
-    column('name', varchar({ length: 255 })),
-    column('email', varchar({ length: 255 })),
-    column('password', varchar({ length: 255 })),
-    column('isActive', boolean({ default: false })),
-    column('createdAt', timestamp({ default: 'CURRENT_TIMESTAMP' })),
-    column('updatedAt', timestamp({ default: 'CURRENT_TIMESTAMP' })),
-  ]),
-]);
-
-const db = new Database('name', { 
+const db = createDb('name', { 
   schema, 
-  client: 'mysql', 
-  connection: {
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'name',
-  },
+  client: 'mysql',
 });
 ```
 
-mq side
-```typescript
 
-```
 
-rest api side
-```typescript
 
-```
+
+
+
+
+
+
+
+
+# DB Creation Option 2
