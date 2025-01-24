@@ -11,7 +11,9 @@
   },
   "scripts": {
     "create-docs": "typedoc --out ./docs ./src/index.ts",
-    "test": "jest"
+    "build" : "tsc",
+    "test": "jest",
+    "cli-init" : "npm i && npm run build && chmod +x ./dist/cli/index.js && npm link --local"
   },
   "author": "Michael Munson",
   "license": "ISC",
@@ -20,6 +22,7 @@
     "url": "https://github.com/michaelmunson/mqsql"
   },
   "dependencies": {
+    "commander": "^5.1.0",
     "mysql2": "^3.7.11",
     "postgres": "^3.4.5"
   },
@@ -34,5 +37,8 @@
   },
   "peerDependencies": {
     "mysql2": "^3.7.11"
+  },
+  "bin": {
+    "sqrl": "./dist/cli/index.js"
   }
 }

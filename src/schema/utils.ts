@@ -1,3 +1,3 @@
-import { type Schema } from "./types";
+import { type SchemaInput } from "./types";
 
-export const createSchema = <T extends Schema>(schema: T) => <const>{...schema};
+export const createSchema = <T extends SchemaInput>(schema: T) => <const>{...schema};
