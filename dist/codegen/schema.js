@@ -6,12 +6,12 @@ const fieldOptionsToSql = (options) => {
         return 'PRIMARY KEY';
     if (options.references)
         return `REFERENCES ${options.references}`;
-    let statement = '';
-    statement += options.withTimezone ? 'WITH TIME ZONE' : '';
-    statement += (options.nullable) ? 'NULL' : 'NOT NULL';
-    statement += options.unique ? 'UNIQUE' : '';
-    statement += options.default ? `DEFAULT ${options.default}` : '';
-    return statement;
+    let statement = [];
+    statement.push(options.withTimezone ? 'WITH TIME ZONE' : '');
+    statement.push(options.nullable ? 'NULL' : 'NOT NULL');
+    statement.push(options.unique ? 'UNIQUE' : '');
+    statement.push(options.default ? `DEFAULT ${options.default}` : '');
+    return statement.filter(Boolean).join(' ');
 };
 const fieldToSql = (field) => {
     if (field.type === '$') {

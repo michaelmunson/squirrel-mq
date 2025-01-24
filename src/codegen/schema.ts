@@ -4,12 +4,12 @@ const fieldOptionsToSql = (options: FieldOptions) : string => {
 
   if (options.primaryKey) return 'PRIMARY KEY';
   if (options.references) return `REFERENCES ${options.references}`;
-  let statement = '';
-  statement += options.withTimezone ? 'WITH TIME ZONE' : '';
-  statement += (options.nullable) ? 'NULL' : 'NOT NULL';
-  statement += options.unique ? 'UNIQUE' : '';
-  statement += options.default ? `DEFAULT ${options.default}` : '';
-  return statement
+  let statement = [];
+  statement.push(options.withTimezone ? 'WITH TIME ZONE' : '');
+  statement.push(options.nullable ? 'NULL' : 'NOT NULL');
+  statement.push(options.unique ? 'UNIQUE' : '');
+  statement.push(options.default ? `DEFAULT ${options.default}` : '');
+  return statement.filter(Boolean).join(' ');
 }
 
 const fieldToSql = (field: Field | CustomField) : string => {
@@ -24,6 +24,6 @@ const tableToSql = (name: string, table: Table) : string => {
   return `CREATE TABLE ${name} (\n\t${fields.join(',\n\t')}\n);`
 }
 
-export const constructSqlSchema = (schema: SchemaInput) : string => {
-  return Object.entries(schema).map(([name, table]) => tableToSql(name, table)).join('\n\n');
+export const constructSqlSchema = (schema: SchemaInput) : string[] => {
+  return Object.entries(schema).map(([name, table]) => tableToSql(name, table));
 }

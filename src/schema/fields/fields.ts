@@ -1,5 +1,7 @@
 import type { FieldFunction, ArgFieldFunction, Field, CustomField } from "./types"
 
+export const inline = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})
+
 export const INTEGER:FieldFunction<number> = (options) => <const>({
     type: 'INTEGER',
     options
@@ -36,5 +38,3 @@ export const ENUM = <T extends readonly string[]>(value:T, options:T[number]) =>
     value,
     options
 });
-
-export const $ = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})

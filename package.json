@@ -2,12 +2,12 @@
   "name": "squirrel-mq",
   "version": "0.0.1",
   "description": "SQL Message Queue",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "files": [
-    "src/**/*"
+    "dist/**/*"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./dist/index.js"
   },
   "scripts": {
     "create-docs": "typedoc --out ./docs ./src/index.ts",
@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "commander": "^5.1.0",
-    "mysql2": "^3.7.11",
     "postgres": "^3.4.5"
   },
   "devDependencies": {

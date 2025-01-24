@@ -1,4 +1,5 @@
 import type { FieldFunction, ArgFieldFunction, CustomField } from "./types";
+export declare const inline: <T>(sql: string) => CustomField<T>;
 export declare const INTEGER: FieldFunction<number>;
 export declare const VARCHAR: ArgFieldFunction<string, number>;
 export declare const SERIAL: FieldFunction<number>;
@@ -10,4 +11,3 @@ export declare const ENUM: <T extends readonly string[]>(value: T, options: T[nu
     readonly value: T;
     readonly options: T[number];
 };
-export declare const $: <T>(sql: string) => CustomField<T>;

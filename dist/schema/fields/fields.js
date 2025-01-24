@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.$ = exports.ENUM = exports.TIMESTAMP = exports.BOOLEAN = exports.TEXT = exports.SERIAL = exports.VARCHAR = exports.INTEGER = void 0;
+exports.ENUM = exports.TIMESTAMP = exports.BOOLEAN = exports.TEXT = exports.SERIAL = exports.VARCHAR = exports.INTEGER = exports.inline = void 0;
+const inline = (sql) => ({ type: '$', statement: sql });
+exports.inline = inline;
 const INTEGER = (options) => ({
     type: 'INTEGER',
     options
@@ -38,5 +40,3 @@ const ENUM = (value, options) => ({
     options
 });
 exports.ENUM = ENUM;
-const $ = (sql) => ({ type: '$', statement: sql });
-exports.$ = $;
