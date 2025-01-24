@@ -1,24 +1,27 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connect = void 0;
-const postgres_1 = __importDefault(require("postgres"));
+const pg_1 = require("pg");
 const codegen_1 = require("../codegen");
-const createExtension = (sql) => ({
+const createExtension = (client) => ({
     initialize: async (schema) => {
-        const schemaString = (0, codegen_1.constructSqlSchema)(schema);
+        const schemaStrings = (0, codegen_1.constructSqlSchema)(schema);
         if (process.env.DEBUG === 'true') {
-            console.log(schemaString);
+            console.log(schemaStrings);
         }
-        return await sql `${schemaString}`;
+        const results = [];
+        for (const statement of schemaStrings) {
+            const result = await client.query(statement);
+            results.push(result);
+        }
+        return results;
     },
 });
 const connect = (...params) => {
-    const sql = (0, postgres_1.default)(...params);
-    const extension = createExtension(sql);
-    Object.assign(sql, extension);
-    return sql;
+    const client = new pg_1.Client(...params);
+    const extension = createExtension(client);
+    Object.assign(client, extension);
+    client.connect();
+    return client;
 };
 exports.connect = connect;

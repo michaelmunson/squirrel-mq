@@ -1,8 +1,8 @@
-import postgres, { Sql } from "postgres";
+import { Client } from "pg";
 import { SchemaInput } from "../schema";
-export type SqrlConnection = Sql & ReturnType<typeof createExtension>;
-declare const createExtension: (sql: Sql) => {
-    readonly initialize: (schema: SchemaInput) => Promise<postgres.RowList<postgres.Row[]>>;
+export type SqrlConnection = Client & ReturnType<typeof createExtension>;
+declare const createExtension: (client: Client) => {
+    readonly initialize: (schema: SchemaInput) => Promise<import("pg").QueryResult<any>[]>;
 };
-export declare const connect: (url: string, options?: postgres.Options<Record<string, postgres.PostgresType<any>>> | undefined) => SqrlConnection;
+export declare const connect: (config?: string | import("pg").ClientConfig | undefined) => SqrlConnection;
 export {};

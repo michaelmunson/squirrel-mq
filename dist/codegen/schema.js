@@ -24,6 +24,6 @@ const tableToSql = (name, table) => {
     return `CREATE TABLE ${name} (\n\t${fields.join(',\n\t')}\n);`;
 };
 const constructSqlSchema = (schema) => {
-    return Object.entries(schema).map(([name, table]) => tableToSql(name, table)).join('\n\n');
+    return Object.entries(schema).map(([name, table]) => tableToSql(name, table));
 };
 exports.constructSqlSchema = constructSqlSchema;

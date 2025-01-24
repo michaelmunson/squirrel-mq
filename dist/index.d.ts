@@ -1,6 +1,6 @@
 export type * from './schema';
 declare const sqrl: {
-    readonly connect: (url: string, options?: import("postgres").Options<Record<string, import("postgres").PostgresType<any>>> | undefined) => import("./connection").SqrlConnection;
+    readonly connect: (config?: string | import("pg").ClientConfig | undefined) => import("./connection").SqrlConnection;
     readonly inline: <T>(sql: string) => import("./schema").CustomField<T>;
     readonly INTEGER: import("./schema").FieldFunction<number>;
     readonly VARCHAR: import("./schema").ArgFieldFunction<string, number>;
