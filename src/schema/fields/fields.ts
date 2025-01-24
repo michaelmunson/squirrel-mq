@@ -1,5 +1,4 @@
-import type { ExtractFieldType, Field, FieldFunction, FieldOptions, ArgFieldFunction } from "./types"
-import { constructFieldFn } from "./utils"
+import type { FieldFunction, ArgFieldFunction, Field, CustomField } from "./types"
 
 export const INTEGER:FieldFunction<number> = (options) => <const>({
     type: 'INTEGER',
@@ -8,7 +7,7 @@ export const INTEGER:FieldFunction<number> = (options) => <const>({
 
 export const VARCHAR:ArgFieldFunction<string, number> = (value, options) => <const>({
     type: 'VARCHAR',
-    value,
+    argument: value,
     options
 });
 
@@ -32,7 +31,10 @@ export const TIMESTAMP:FieldFunction<string> = (options) => <const>({
     options
 });
 
-export const ENUM:FieldFunction<any, readonly string[]> = <T>(options:T) => <const>({
+export const ENUM = <T extends readonly string[]>(value:T, options:T[number]) => <const>({
     type: 'ENUM',
+    value,
     options
 });
+
+export const $ = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})
