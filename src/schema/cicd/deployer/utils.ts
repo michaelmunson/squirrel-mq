@@ -1,3 +1,4 @@
+import { FieldSchema } from "../../../client/types";
 import { PostgresSchemaMap, PostgresTableMap, SchemaInput, SchemaMap } from "../../types";
 import { SchemaChangeSet, SchemaDeployerConfig } from "./types";
 
@@ -27,13 +28,19 @@ export const compareSchema = (newSchema: SchemaInput, currentSchema: PostgresSch
       }
     }
   }
-  
+  return changeSet;
 }
 
 export const standardizeFieldSchema = (fieldSchema: FieldSchema) => {
-  return {
-    name: fieldSchema.column_name,
-    type: fieldSchema.type,
-    nullable: fieldSchema.nullable,
-  }
+  const mapping = {
+    'character varying' : 'varchar',
+    'text' : 'text',
+    'integer' : 'int',
+    'bigint' : 'bigint',
+    'float' : 'float',
+    'double precision' : 'double',
+    'serial' : 'integer',
+  };
+  fieldSchema['data_type'] = mapping[fieldSchema['data_type'] as keyof typeof mapping] ?? fieldSchema['data_type'];
+  return fieldSchema;
 }

@@ -40,13 +40,6 @@ export class SchemaDeployer {
     console.log(tables);
   }
 
-  async test(){
-    return await this.client.query(`
-      \\d users
-    `);
-  }
-
-
 }
 
 /*
