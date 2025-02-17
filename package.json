@@ -7,7 +7,11 @@
     "dist/**/*"
   ],
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./schema": "./dist/schema/index.js",
+    "./schema/fields": "./dist/schema/fields/fields.js",
+    "./client": "./dist/client/index.js",
+    "./api": "./dist/api/index.js"
   },
   "scripts": {
     "create-docs": "typedoc --out ./docs ./src/index.ts",
@@ -23,6 +27,7 @@
   },
   "dependencies": {
     "commander": "^5.1.0",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "pg": "^8.13.1",
     "postgres": "^3.4.5"

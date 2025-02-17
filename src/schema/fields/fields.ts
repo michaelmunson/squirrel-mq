@@ -1,6 +1,6 @@
 import type { Field, CustomField, FieldOptions } from "./types"
 
-export const inline = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})
+export const SQL = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})
 
 export const INTEGER = <N extends boolean>(options?:FieldOptions<number,N>):Field<number,N> => <const>({
     type: 'INTEGER',

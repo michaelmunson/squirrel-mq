@@ -43,5 +43,6 @@ export type ExtractFieldType<F extends Field<any,any> | CustomField<any>> = (
     F extends CustomField<infer T> ? T : never
   )
 )
+
 export type ExtractFieldArgument<F extends Field<any,any>> = F extends Field<infer _, infer A> ? A : never;
 
