@@ -36,7 +36,7 @@ const TIMESTAMP = (options) => ({
 exports.TIMESTAMP = TIMESTAMP;
 const ENUM = (value, options) => ({
     type: 'ENUM',
-    value,
+    argument: value,
     options
 });
 exports.ENUM = ENUM;

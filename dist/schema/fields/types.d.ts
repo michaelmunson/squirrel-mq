@@ -12,26 +12,24 @@ export type TypeMap = {
     TEXT: string;
 };
 export type Type = keyof TypeMap;
-export type FieldOptions<T = any> = {
+export type FieldOptions<T, Nullable extends boolean = true> = {
     default?: T;
-    nullable?: boolean;
+    nullable?: Nullable;
     unique?: boolean;
     primaryKey?: boolean;
     references?: `${string}(${string})`;
     serial?: boolean;
     withTimezone?: boolean;
 };
-export type Field<T = any, A extends any = never> = {
+export type Field<T, Nullable extends boolean = true> = {
     type: Type;
-    argument?: A;
-    options?: FieldOptions<T>;
+    argument?: any;
+    options?: FieldOptions<T, Nullable>;
 };
 export type CustomField<T = any> = {
     type: '$';
     value?: T;
     statement: string;
 };
-export type FieldFunction<T = any, A = any> = (options?: FieldOptions<T>) => Field<T, A>;
-export type ArgFieldFunction<T = any, A = any> = (value: A, options?: FieldOptions<T>) => Field<T, A>;
-export type ExtractFieldType<F extends Field<any, any> | CustomField<any>> = F extends Field<infer T, infer _> ? T : F extends CustomField<infer T> ? T : never;
+export type ExtractFieldType<F extends Field<any, any> | CustomField<any>> = (F extends Field<infer T, infer N> ? (T | (N extends true ? null : never)) : (F extends CustomField<infer T> ? T : never));
 export type ExtractFieldArgument<F extends Field<any, any>> = F extends Field<infer _, infer A> ? A : never;

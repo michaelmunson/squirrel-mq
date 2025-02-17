@@ -22,14 +22,16 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const schema_1 = require("./schema");
 const fields = __importStar(require("./schema/fields/fields"));
-const connection_1 = require("./connection");
+__exportStar(require("./connection"), exports);
 const sqrl = {
     schema: schema_1.createSchema,
     table: schema_1.createTable,
     ...fields,
-    connect: connection_1.connect,
 };
 exports.default = sqrl;

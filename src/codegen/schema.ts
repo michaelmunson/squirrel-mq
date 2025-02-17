@@ -1,7 +1,6 @@
 import { CustomField, Field, FieldOptions, SchemaInput, Table } from "../schema";
 
-const fieldOptionsToSql = (options: FieldOptions) : string => {
-
+const fieldOptionsToSql = (options: FieldOptions<any,any>) : string => {
   if (options.primaryKey) return 'PRIMARY KEY';
   if (options.references) return `REFERENCES ${options.references}`;
   let statement = [];
@@ -12,7 +11,7 @@ const fieldOptionsToSql = (options: FieldOptions) : string => {
   return statement.filter(Boolean).join(' ');
 }
 
-const fieldToSql = (field: Field | CustomField) : string => {
+const fieldToSql = (field: Field<any,any> | CustomField<any>) : string => {
   if (field.type === '$') {
     return field.statement
   }
