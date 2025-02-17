@@ -2,7 +2,7 @@ import type { Field, CustomField, FieldOptions } from "./types"
 
 export const inline = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})
 
-export const INTEGER = <N extends boolean>(options?:FieldOptions<number,N>):Field<number,N> => ({
+export const INTEGER = <N extends boolean>(options?:FieldOptions<number,N>):Field<number,N> => <const>({
     type: 'INTEGER',
     options
 });
@@ -13,7 +13,7 @@ export const VARCHAR = <N extends boolean>(value:number, options?:FieldOptions<s
     options
 });
 
-export const SERIAL = <N extends boolean>(options?:FieldOptions<number,N>):Field<number,N> => ({
+export const SERIAL = (options?:FieldOptions<number,false>):Field<number,false> => ({
     type: 'SERIAL',
     options
 });

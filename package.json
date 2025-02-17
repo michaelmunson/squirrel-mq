@@ -1,6 +1,6 @@
 {
   "name": "squirrel-mq",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "SQL Message Queue",
   "main": "dist/index.js",
   "files": [
