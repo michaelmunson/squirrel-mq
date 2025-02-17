@@ -1,6 +1,6 @@
 import { PgClient, PgClientParams } from "./pg";
 import { sql } from "../utils";
-import { SchemaInput } from "../schema";
+import { SchemaInput, SchemaMap, Table, TableMap } from "../schema";
 class SqrlClientError extends Error {
   constructor(message: string) {
     super(message);
@@ -19,27 +19,34 @@ export class SqrlClient extends PgClient {
     return result;
   }
 
-  async listTables() {
+  async listTables() : Promise<string[]> {
     if (!this.connected) throw new SqrlClientError('Client not connected');
     const result = await this.query(sql`
       SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';
     `);
-    return result.rows;
+    return result.rows.map((row: any) => row.table_name);
   }
 
-  async readSchema(schema: SchemaInput) {
+  async getDeployedSchema() {
     if (!this.connected) throw new SqrlClientError('Client not connected');
-    const results: any[][] = [];
-    for (const table of Object.keys(schema)) {
+    const tables = await this.listTables();
+    const schemaObject:SchemaMap = new Map();
+    for (const table of tables) {
       const result = await this.query(sql`
         SELECT * FROM information_schema.columns
         WHERE table_schema = 'public'
         AND table_name = '${table}';
       `);
 
-      results.push(result.rows);
+      if (result.rows.length !== 0){
+        const tableMap:TableMap = new Map();
+        result.rows.forEach((row) => {
+          tableMap.set(row.column_name, row);
+        });
+        schemaObject.set(table, tableMap);
+      }
     }
-    return results;
+    return schemaObject;
   }
 }
 

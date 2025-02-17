@@ -1,4 +1,6 @@
-import { CustomField, Field, FieldOptions, SchemaInput, Table } from "../schema";
+import { CustomField, Field, FieldOptions, SchemaInput, Table } from "..";
+import { sql } from "../../utils";
+import { SchemaToSqlConfig } from "./types";
 
 const fieldOptionsToSql = (options: FieldOptions<any,any>) : string => {
   if (options.primaryKey) return 'PRIMARY KEY';
@@ -11,18 +13,21 @@ const fieldOptionsToSql = (options: FieldOptions<any,any>) : string => {
   return statement.filter(Boolean).join(' ');
 }
 
-const fieldToSql = (field: Field<any,any> | CustomField<any>) : string => {
+export const fieldToSql = (field: Field<any,any> | CustomField<any>) : string => {
   if (field.type === '$') {
     return field.statement
   }
   return `${field.type}${field.argument ? `(${field.argument})` : ''} ${fieldOptionsToSql(field.options ?? {})}`
 }
 
-const tableToSql = (name: string, table: Table) : string => {
+export const tableToSql = (name: string, table: Table) : string => {
   const fields = Object.entries(table).map(([key, field]) => `${key} ${fieldToSql(field)}`);
-  return `CREATE TABLE ${name} (\n\t${fields.join(',\n\t')}\n);`
+  return sql`CREATE TABLE ${name} (\n\t${fields.join(',\n\t')}\n);`
 }
 
-export const constructSqlSchema = (schema: SchemaInput) : string[] => {
-  return Object.entries(schema).map(([name, table]) => tableToSql(name, table));
+export const schemaToSql = (schema: SchemaInput, config?: SchemaToSqlConfig) : string[] => {
+  return Object.entries(schema).map(([name, table]) => [
+    config?.dropExisting ? sql`DROP TABLE IF EXISTS ${name} CASCADE;` : '',
+    tableToSql(name, table)
+  ]).flat().filter(Boolean);
 }

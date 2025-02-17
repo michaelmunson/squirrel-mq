@@ -1,9 +1,8 @@
 
-import { SchemaInput } from "../../../schema";
+import { schemaToSql, SchemaInput } from "../../../schema";
 import { SqrlClient } from "../../../client";
 import { SchemaDeployerConfig } from "./types";
 import { DEFAULT_CONFIG } from "./utils";
-import { Client } from "pg";
 
 export class SchemaDeployer {
   readonly client: SqrlClient;
@@ -16,10 +15,23 @@ export class SchemaDeployer {
     }
   }
 
+  async initialize() {
+    if (!this.client.connected) await this.client.connect();
+    const schemaStrings = schemaToSql(this.schema, { dropExisting: true });
+    const results = [];
+    for (const statement of schemaStrings) {
+      const result = await this.client.query(statement);
+      results.push(result);
+    }
+    return results;
+  }
+
   async getChangeSet() {
     if (!this.client.connected) await this.client.connect();
     const tables = await this.client.listTables();
+    const schema = await this.client.getDeployedSchema();
     console.log(tables);
+    console.log(schema);
   }
 
   async deploy() {
