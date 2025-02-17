@@ -1,3 +1,4 @@
+import { FieldSchema } from "../../client/types";
 import { CustomField, type Field } from "../fields"
 export type TableInput = Record<string, Field<any, any> | CustomField<any>>
 export type Table<
@@ -7,5 +8,11 @@ export type Table<
 export class TableMap extends Map<string, Field<any, any>> {
   constructor(tableMap: TableMap) {
     super(tableMap);
+  }
+}
+
+export class PostgresTableMap extends Map<string, FieldSchema> {
+  constructor(tableMap:PostgresTableMap){
+    super(tableMap)
   }
 }

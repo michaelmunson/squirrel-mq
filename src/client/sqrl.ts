@@ -27,7 +27,7 @@ export class SqrlClient extends PgClient {
     return result.rows.map((row: any) => row.table_name);
   }
 
-  async getDeployedSchema() {
+  async getSchema() {
     if (!this.connected) throw new SqrlClientError('Client not connected');
     const tables = await this.listTables();
     const schemaObject:SchemaMap = new Map();

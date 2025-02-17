@@ -29,7 +29,7 @@ export class SchemaDeployer {
   async getChangeSet() {
     if (!this.client.connected) await this.client.connect();
     const tables = await this.client.listTables();
-    const schema = await this.client.getDeployedSchema();
+    const schema = await this.client.getSchema();
     console.log(tables);
     console.log(schema);
   }
@@ -40,6 +40,11 @@ export class SchemaDeployer {
     console.log(tables);
   }
 
+  async test(){
+    return await this.client.query(`
+      \\d users
+    `);
+  }
 
 
 }

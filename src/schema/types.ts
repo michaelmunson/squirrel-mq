@@ -1,7 +1,7 @@
 export type * from './fields'
 export type * from './table'
 import { ExtractFieldType } from './fields';
-import { type TableMap, type Table } from "./table";
+import { type TableMap, type Table, PostgresTableMap } from "./table";
 
 export type SchemaInput = Record<string, Table>
 
@@ -16,3 +16,9 @@ export class SchemaMap extends Map<string, TableMap> {
     super(schemaMap);
   }
 } 
+
+export class PostgresSchemaMap extends Map<string, PostgresTableMap>{
+  constructor(schemaMap: PostgresSchemaMap) {
+    super(schemaMap);
+  }
+}
