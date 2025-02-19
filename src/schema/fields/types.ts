@@ -20,8 +20,10 @@ export type FieldOptions<T, Nullable extends boolean = true> = {
   unique?: boolean
   primaryKey?: boolean
   references?: `${string}(${string})`,
-  serial?: boolean
-  withTimezone?: boolean
+  withTimezone?: boolean,
+  generatedAlwaysAsIdentity?: boolean,
+  generatedByDefaultAsIdentity?: boolean,
+
 }
 
 export type Field<T, Nullable extends boolean = true> = {

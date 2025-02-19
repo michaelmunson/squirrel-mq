@@ -2,6 +2,15 @@ import type { Field, CustomField, FieldOptions } from "./types"
 
 export const SQL = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})
 
+export const AUTO_ID = (options?:FieldOptions<number,false>):Field<number,false> => ({
+    type: 'INTEGER',
+    options: {
+        ...options,
+        generatedAlwaysAsIdentity: true,
+        primaryKey: true,
+    }
+})
+
 export const INTEGER = <N extends boolean>(options?:FieldOptions<number,N>):Field<number,N> => <const>({
     type: 'INTEGER',
     options

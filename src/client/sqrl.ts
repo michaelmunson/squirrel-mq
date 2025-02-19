@@ -1,6 +1,10 @@
 import { PgClient, PgClientParams } from "./pg";
 import { sql } from "../utils";
-import { SchemaInput, SchemaMap, Table, TableMap } from "../schema";
+import { SchemaMap, TableMap } from "../schema";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 class SqrlClientError extends Error {
   constructor(message: string) {
     super(message);

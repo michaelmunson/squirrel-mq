@@ -13,31 +13,38 @@ npm install squirrel-mq
 ### Create a schema
 
 ```ts
-import $, { SchemaType } from "squirrel-mq";
-import {constructSqlSchema} from "squirrel-mq/codegen";
+import {AUTO_ID, INTEGER, SchemaType, SERIAL, TEXT, TIMESTAMP, VARCHAR} from 'squirrel-mq';
 
-const schema = {
+const tableDefaults = {
+  created_at: TIMESTAMP({
+    default: 'CURRENT_TIMESTAMP',
+    withTimezone: true,
+  }),
+  updated_at: TIMESTAMP({
+    default: 'CURRENT_TIMESTAMP',
+    withTimezone: true,
+  })
+}
+
+export const SCHEMA = {
   users: {
-    id: $.SERIAL({primaryKey: true}),
-    firstName: $.VARCHAR(255, {nullable: false}),
-    lastName: $.VARCHAR(255, {nullable: false}),
-    email: $.VARCHAR(255, {
-      unique: true,
-      nullable: false,
-    }),
-    createdAt: $.TIMESTAMP({nullable: false}),
-    updatedAt: $.inline<number>('TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP'),
-    age: $.INTEGER(),
+    id: AUTO_ID({unique: true}),
+    name: VARCHAR(255),
+    email: VARCHAR(255),
+    age: INTEGER(),
+    ...tableDefaults
   },
   posts: {
-    id: $.SERIAL({primaryKey: true}),
-    userId: $.SERIAL({
-      references: 'users(id)'
+    id: SERIAL({primaryKey: true}),
+    title: VARCHAR(255),
+    content: TEXT(),
+    user_id: INTEGER({
+      references: 'users(id)',
     }),
+    ...tableDefaults
   }
-};
+}
 
-export type Schema = SchemaType<typeof schema>;
+export type Schema = SchemaType<typeof SCHEMA>
 
-console.log(constructSqlSchema(schema)); // output the sql schema 
 ```
