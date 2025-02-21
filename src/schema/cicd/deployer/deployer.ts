@@ -1,13 +1,13 @@
 
 import { createSchemaSql, SchemaInput } from "../../../schema";
-import { SqrlClient } from "../../../client";
+import { SqrlPgClient } from "../../../pg";
 import { SchemaChange, SchemaDeployerConfig } from "./types";
 import { getSchemaChangeset, DEFAULT_CONFIG, convertSchemaChangesetToSql } from "./utils";
 
 export class SchemaDeployer {
-  readonly client: SqrlClient;
+  readonly client: SqrlPgClient;
   constructor(private readonly schema: SchemaInput, private readonly config: SchemaDeployerConfig = DEFAULT_CONFIG) {
-    this.client = new SqrlClient(this.config.client);
+    this.client = new SqrlPgClient(this.config.client);
     if (this.config.autoDeploy) {
       this.client.connect().then(() => {
         this.deploy();

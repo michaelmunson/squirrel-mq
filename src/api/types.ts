@@ -1,4 +1,4 @@
-import { PgClientParams } from "../client";
+import { PgClientParams } from "../pg";
 
 export type SnakeToCamelCase<S extends string> = S extends `${infer T}_${infer U}`
   ? `${T}${Capitalize<SnakeToCamelCase<U>>}`

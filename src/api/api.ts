@@ -1,7 +1,7 @@
 import express from 'express';
 import { SchemaInput, Table } from '../schema';
 import { APIConfig } from './types';
-import { PgClient } from '../client';
+import { PgClient } from '../pg';
 import { createTableRoutes } from './utils';
 import * as dotenv from 'dotenv';
 

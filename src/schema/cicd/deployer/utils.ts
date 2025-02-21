@@ -1,4 +1,4 @@
-import { FieldSchema } from "../../../client/types";
+import { FieldSchema } from "../../../pg/types";
 import { createTableSql, dropTableSql, alterTableAddFieldSql, alterTableDropFieldSql, alterTableAlterFieldSql } from "../../codegen/table";
 import { Field, PostgresSchemaMap, PostgresTableMap, SchemaInput, SchemaMap } from "../../types";
 import { SchemaChange, SchemaDeployerConfig } from "./types";

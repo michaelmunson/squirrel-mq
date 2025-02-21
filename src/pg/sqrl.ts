@@ -12,7 +12,7 @@ class SqrlClientError extends Error {
   }
 }
 
-export class SqrlClient extends PgClient {
+export class SqrlPgClient extends PgClient {
   connected = false;
   constructor(params: PgClientParams) {
     super(params);
@@ -55,6 +55,6 @@ export class SqrlClient extends PgClient {
   }
 }
 
-export const createSqrlClient = (params: PgClientParams) => {
-  return new SqrlClient(params);
+export const createSqrlPgClient = (params: PgClientParams) => {
+  return new SqrlPgClient(params);
 }

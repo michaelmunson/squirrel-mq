@@ -1,4 +1,4 @@
-import { FieldSchema } from "../../client/types";
+import { FieldSchema } from "../../pg/types";
 import { CustomField, type Field } from "../fields"
 export type TableInput = Record<string, Field<any, any> | CustomField<any>>
 export type Table<
