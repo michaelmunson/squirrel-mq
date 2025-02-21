@@ -1,22 +1,11 @@
 import { Table } from '../../schema';
 import { API } from '../api';
-import { sql } from '../../utils';
-
-const createAllRoute = (api:API, name: string, table: Table) => {
-  const columns = Object.keys(table).join(', ');
-  api.app.get(`${api.config.prefix}/${name}`, async (req, res) => {
-    try {
-      const statement = sql`SELECT ${columns} FROM ${name};`;
-      const result = await api.client.query(statement);
-      res.status(200).send(result.rows);
-    }
-    catch (err) {
-      res.status(500).send(err);
-    }
-  });
-}
+import * as routes from './routes';
 
 export const createTableRoutes = (api:API, name: string, table: Table) => {
-  createAllRoute(api, name, table);
-
+  routes.createAllRoute(api, name, table);
+  routes.createGetRoute(api, name, table);
+  routes.createPostRoute(api, name, table);
+  routes.createPatchRoute(api, name, table);
+  routes.createDeleteRoute(api, name, table);
 }
