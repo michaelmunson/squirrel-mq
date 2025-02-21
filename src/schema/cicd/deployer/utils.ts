@@ -1,4 +1,5 @@
 import { FieldSchema } from "../../../client/types";
+import { createTableSql, dropTableSql, alterTableAddFieldSql, alterTableDropFieldSql, alterTableAlterFieldSql } from "../../codegen/table";
 import { Field, PostgresSchemaMap, PostgresTableMap, SchemaInput, SchemaMap } from "../../types";
 import { SchemaChange, SchemaDeployerConfig } from "./types";
 
@@ -6,7 +7,7 @@ export const DEFAULT_CONFIG: SchemaDeployerConfig = {
   autoDeploy: false,
 }
 
-export const compareSchema = (newSchema: SchemaInput, currentSchema: PostgresSchemaMap) : SchemaChange[] => {
+export const getSchemaChangeset = (newSchema: SchemaInput, currentSchema: PostgresSchemaMap) : SchemaChange[] => {
   const changeSet:SchemaChange[] = [];
   // CREATE
   for (const table in newSchema) {
@@ -37,7 +38,7 @@ export const compareSchema = (newSchema: SchemaInput, currentSchema: PostgresSch
             name: field,
             field: newTable[field]
           })
-        } else {
+        } else if (newTable[field].type !== '$') {
           changeSet.push({
             type: 'ALTER_COLUMN',
             tableName: table,
@@ -60,16 +61,24 @@ export const compareSchema = (newSchema: SchemaInput, currentSchema: PostgresSch
   return changeSet;
 }
 
-export const standardizeFieldSchema = (fieldSchema: FieldSchema) => {
-  const mapping = {
-    'character varying' : 'varchar',
-    'text' : 'text',
-    'integer' : 'int',
-    'bigint' : 'bigint',
-    'float' : 'float',
-    'double precision' : 'double',
-    'serial' : 'integer',
-  };
-  fieldSchema['data_type'] = mapping[fieldSchema['data_type'] as keyof typeof mapping] ?? fieldSchema['data_type'];
-  return fieldSchema;
+export const convertSchemaChangesetToSql = (changeset: SchemaChange[]) : string[] => {
+  const statements:string[] = [];
+  for (const change of changeset){
+    if (change.type === 'CREATE_TABLE'){
+      statements.push(createTableSql(change.name, change.fields));
+    }
+    else if (change.type === 'DROP_TABLE'){
+      statements.push(dropTableSql(change.name));
+    }
+    else if (change.type === 'ADD_COLUMN'){
+      statements.push(alterTableAddFieldSql(change.tableName, change.name, change.field));
+    }
+    else if (change.type === 'DROP_COLUMN'){
+      statements.push(alterTableDropFieldSql(change.tableName, change.name));
+    }
+    else if (change.type === 'ALTER_COLUMN'){
+      statements.push(...alterTableAlterFieldSql(change.tableName, change.name, change.field));
+    }
+  }
+  return statements;
 }

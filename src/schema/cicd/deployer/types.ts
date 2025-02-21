@@ -17,12 +17,12 @@ export type SchemaDeployerConfig = {
 //   field: Field<any, any>;
 // })
 
-type AnyField = Field<any,any> | CustomField<any>
+type F = Field<any,any>
 
 export type SchemaChange = (
   {type: 'CREATE_TABLE', name: string, fields:Table} | 
   {type: 'DROP_TABLE', name:string} | 
-  {type: 'ADD_COLUMN', tableName: string, name:string, field:AnyField} |
-  {type: 'ALTER_COLUMN', tableName:string, name:string, field:AnyField} |
+  {type: 'ADD_COLUMN', tableName: string, name:string, field:F | CustomField<any>} |
+  {type: 'ALTER_COLUMN', tableName:string, name:string, field:F} |
   {type: 'DROP_COLUMN', tableName:string, name:string}
 )

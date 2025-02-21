@@ -1,8 +1,8 @@
 
-import { schemaToSql, SchemaInput } from "../../../schema";
+import { createSchemaSql, SchemaInput } from "../../../schema";
 import { SqrlClient } from "../../../client";
-import { SchemaDeployerConfig } from "./types";
-import { DEFAULT_CONFIG } from "./utils";
+import { SchemaChange, SchemaDeployerConfig } from "./types";
+import { getSchemaChangeset, DEFAULT_CONFIG, convertSchemaChangesetToSql } from "./utils";
 
 export class SchemaDeployer {
   readonly client: SqrlClient;
@@ -17,7 +17,7 @@ export class SchemaDeployer {
 
   async initialize() {
     if (!this.client.connected) await this.client.connect();
-    const schemaStrings = schemaToSql(this.schema, { dropExisting: true });
+    const schemaStrings = createSchemaSql(this.schema, { dropExisting: true });
     const results = [];
     for (const statement of schemaStrings) {
       const result = await this.client.query(statement);
@@ -28,16 +28,25 @@ export class SchemaDeployer {
 
   async getChangeSet() {
     if (!this.client.connected) await this.client.connect();
-    const tables = await this.client.listTables();
-    const schema = await this.client.getSchema();
-    console.log(tables);
-    console.log(schema);
+    const currentSchema = await this.client.getSchema();
+    const changeSet = getSchemaChangeset(this.schema, currentSchema);
+    return changeSet;
   }
 
-  async deploy() {
+  async deploy(_changeSet?: SchemaChange[]) {
     if (!this.client.connected) await this.client.connect();
-    const tables = await this.client.listTables();
-    console.log(tables);
+    const changeSet = _changeSet ?? await this.getChangeSet();
+    const statements = convertSchemaChangesetToSql(changeSet);
+    const results = [];
+    for (const statement of statements) {
+      try {
+        const result = await this.client.query(statement);
+        results.push(result);
+      } catch (error) {
+        results.push(error);
+      }
+    }
+    return results;
   }
 
 }

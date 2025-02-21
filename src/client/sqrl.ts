@@ -1,7 +1,8 @@
 import { PgClient, PgClientParams } from "./pg";
 import { sql } from "../utils";
-import { SchemaMap, TableMap } from "../schema";
+import { PostgresSchemaMap, PostgresTableMap, SchemaMap, TableMap } from "../schema";
 import * as dotenv from 'dotenv';
+import { FieldSchema } from "./types";
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ export class SqrlClient extends PgClient {
   async getSchema() {
     if (!this.connected) throw new SqrlClientError('Client not connected');
     const tables = await this.listTables();
-    const schemaObject:SchemaMap = new Map();
+    const schemaObject:PostgresSchemaMap = new Map();
     for (const table of tables) {
       const result = await this.query(sql`
         SELECT * FROM information_schema.columns
@@ -43,9 +44,9 @@ export class SqrlClient extends PgClient {
       `);
 
       if (result.rows.length !== 0){
-        const tableMap:TableMap = new Map();
+        const tableMap:PostgresTableMap = new Map();
         result.rows.forEach((row) => {
-          tableMap.set(row.column_name, row);
+          tableMap.set(row.column_name, row as FieldSchema);
         });
         schemaObject.set(table, tableMap);
       }
