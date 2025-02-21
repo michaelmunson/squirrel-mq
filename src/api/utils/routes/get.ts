@@ -4,9 +4,9 @@ import { sql } from '../../../utils';
 
 export const createGetRoute = (api:API, name: string, table: Table) => {
   const columns = Object.keys(table).join(', ');
-  api.app.get(`${api.config.prefix}/${name}/:id`, async (req, res) => {
+  const route = `${api.config.prefix}/${name}/:id`;
+  if (!api.hasRoute(route)) api.app.get(route, async (req, res) => {
     try {
-      
       const statement = (
         sql`
           SELECT ${columns} FROM ${name}

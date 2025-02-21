@@ -3,7 +3,8 @@ import { API } from '../../api';
 import { sql } from '../../../utils';
 
 export const createPostRoute = (api:API, name: string, table: Table) => {
-  api.app.post(`${api.config.prefix}/${name}`, async (req, res) => {
+  const route = `${api.config.prefix}/${name}`;
+  if (!api.hasRoute(route)) api.app.post(route, async (req, res) => {
     try {
       let iterator = 1;
       const columns = Object.keys(req.body);

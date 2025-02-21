@@ -64,7 +64,8 @@ const getFilterStatementArray = (query:Record<string, string>) : [string[], any[
 
 export const createAllRoute = (api:API, name: string, table: Table) => {
   const columns = Object.keys(table).join(', ');
-  api.app.get(`${api.config.prefix}/${name}`, async (req, res) => {
+  const route = `${api.config.prefix}/${name}`;
+  if (!api.hasRoute(route)) api.app.get(route, async (req, res) => {
     try {
       const {page=api.config.pagination?.defaultPage ?? 1, limit=api.config.pagination?.defaultLimit ?? 10, ...query} = req.query as FilterQuery<Record<string, string>>;
       const [statementArray, statementValues] = getFilterStatementArray(query);
@@ -73,7 +74,6 @@ export const createAllRoute = (api:API, name: string, table: Table) => {
         ...statementArray.length > 0 ? [sql`WHERE ${statementArray.join(' AND ')}`] : [],
         sql`LIMIT $1 OFFSET $2`,
       ].join(' ');
-      console.log(statement, statementValues);
       const values = [limit, (page - 1) * limit, ...statementValues];
       const result = await api.client.query(statement, values);
       res.status(200).send(result.rows);

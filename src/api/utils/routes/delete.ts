@@ -3,7 +3,8 @@ import { API } from '../../api';
 import { sql } from '../../../utils';
 
 export const createDeleteRoute = (api:API, name: string, table: Table) => {
-  api.app.delete(`${api.config.prefix}/${name}/:id`, async (req, res) => {
+  const route = `${api.config.prefix}/${name}/:id`;
+  if (!api.hasRoute(route)) api.app.delete(route, async (req, res) => {
     try {
       const id = req.params.id;
       const statement = sql`

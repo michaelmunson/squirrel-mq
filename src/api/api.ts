@@ -25,7 +25,6 @@ export class API<Schema extends SchemaInput = SchemaInput> {
     app.use(express.urlencoded({ extended: true }));
     this.app = app;
     this.client = new PgClient(config.client);
-    this.initialize();
   }
 
   private initialize() {
@@ -34,12 +33,21 @@ export class API<Schema extends SchemaInput = SchemaInput> {
     });
   }
 
+  hasRoute(path: string) {
+    return this.app._router.stack.some((route: any) => route.route?.path === path);
+  }
+
   async start() : Promise<Error | undefined> {
     await this.client.connect();
+    this.initialize();
     return new Promise((resolve, reject) => {
       this.app.listen(this.config.port, (...args) => {
         resolve(...args);
       });
     });
   } 
+}
+
+export const createAPI = <Schema extends SchemaInput>(schema: Schema, config: APIConfig = DEFAULT_CONFIG) => {
+  return new API(schema, config);
 }

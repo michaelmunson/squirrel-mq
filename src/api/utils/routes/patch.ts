@@ -3,7 +3,8 @@ import { API } from '../../api';
 import { sql } from '../../../utils';
 
 export const createPatchRoute = (api:API, name: string, table: Table) => {
-  api.app.patch(`${api.config.prefix}/${name}/:id`, async (req, res) => {
+  const route = `${api.config.prefix}/${name}/:id`;
+  if (!api.hasRoute(route)) api.app.patch(route, async (req, res) => {
     try {
       let iterator = 2;
       const id = req.params.id;
