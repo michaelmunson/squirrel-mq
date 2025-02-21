@@ -5,7 +5,6 @@ import { sql } from '../../../utils';
 export const createPostRoute = (api:API, name: string, table: Table) => {
   api.app.post(`${api.config.prefix}/${name}`, async (req, res) => {
     try {
-      console.log(req.body);
       let iterator = 1;
       const columns = Object.keys(req.body);
       const values = Object.values(req.body);

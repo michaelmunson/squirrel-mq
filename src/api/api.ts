@@ -10,6 +10,10 @@ dotenv.config();
 const DEFAULT_CONFIG: APIConfig = {
   port: 3000,
   prefix: '/api',
+  pagination: {
+    defaultPage: 1,
+    defaultLimit: 10,
+  }
 }
 
 export class API<Schema extends SchemaInput = SchemaInput> {

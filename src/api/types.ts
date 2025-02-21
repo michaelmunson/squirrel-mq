@@ -10,8 +10,17 @@ export type SnakeToCamelCaseObject<T> = {
     : T[K];
 };
 
+export type FilterQuery<T extends Record<string, string> = Record<string, string>> = {
+  page?: number;
+  limit?: number;
+} & T
+
 export type APIConfig = {
   client?: PgClientParams;
   port?: number;
   prefix?: `/${string}`;
+  pagination?: {
+    defaultPage?: number;
+    defaultLimit?: number;
+  }
 }
