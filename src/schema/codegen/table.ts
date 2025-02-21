@@ -20,7 +20,7 @@ export const alterTableDropFieldSql = (tableName: string, fieldName: string) => 
 export const alterTableAlterFieldSql = (tableName: string, fieldName: string, field: Field<any,any>) : string[] => {
   const statements = [
     sql`ALTER TABLE ${tableName} ALTER COLUMN ${fieldName} SET DATA TYPE ${field.type}${field.argument ? `(${field.argument})` : ''};`,
-    sql`ALTER TABLE ${tableName} ALTER COLUMN ${fieldName} SET ${field.options?.nullable ? 'NULL' : 'NOT NULL'};`,
+    field.options?.nullable === false ? sql`ALTER TABLE ${tableName} ALTER COLUMN ${fieldName} SET NOT NULL;` : sql`ALTER TABLE ${tableName} ALTER COLUMN ${fieldName} DROP NOT NULL;`,
   ];
   if (field.options?.default) {
     statements.push(sql`ALTER TABLE ${tableName} ALTER COLUMN ${fieldName} SET DEFAULT ${field.options.default};`);

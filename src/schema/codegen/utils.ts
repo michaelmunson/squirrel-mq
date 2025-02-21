@@ -3,7 +3,7 @@ import { CustomField, Field, FieldOptions } from "../fields";
 export const fieldOptionsToSql = (options: FieldOptions<any,any>) : string => {
   let statement = [];
   statement.push(options.withTimezone ? 'WITH TIME ZONE' : '');
-  statement.push(options.nullable ? 'NULL' : 'NOT NULL');
+  statement.push(options.nullable === false ? 'NOT NULL' : 'NULL');
   statement.push(options.unique ? 'UNIQUE' : '');
   statement.push(options.default ? `DEFAULT ${options.default}` : '');
   statement.push(options.generatedAlwaysAsIdentity ? 'GENERATED ALWAYS AS IDENTITY' : '');
