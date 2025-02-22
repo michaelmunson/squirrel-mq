@@ -10,10 +10,12 @@ npm install squirrel-mq
 
 ## Usage
 
-### Create a schema
-
+### Create a Schema
 ```ts
-import {AUTO_ID, INTEGER, SchemaType, SERIAL, TEXT, TIMESTAMP, VARCHAR} from 'squirrel-mq';
+// schema.ts
+
+import {type SchemaType, AUTO_ID, INTEGER, SERIAL, TEXT, TIMESTAMP, VARCHAR} from 'squirrel-mq/schema';
+
 
 const tableDefaults = {
   created_at: TIMESTAMP({
@@ -46,5 +48,56 @@ export const SCHEMA = {
 }
 
 export type Schema = SchemaType<typeof SCHEMA>
-
 ```
+
+### Deploy the Schema
+```ts
+import { deploySchema } from 'squirrel-mq/deploy';
+
+deploySchema(SCHEMA);
+```
+
+### Deploy the Schema in CI/CD
+```ts
+import { SchemaDeployer } from 'squirrel-mq/cicd';
+import { SCHEMA } from './schema';
+
+const deployer = new SchemaDeployer(SCHEMA);
+
+deployer.deploy().then(() => console.log('Schema Deployed'));
+```
+
+### Create an API
+```ts
+import { createAPI } from 'squirrel-mq/api';
+import { SCHEMA } from './schema';
+
+const api = createAPI(SCHEMA, {
+  port: 3000,
+});
+
+api.start().then(() => console.log(`Server started on port ${api.config.port}`));
+```
+
+### Create a Client
+```ts
+import { createClient } from 'squirrel-mq/client';
+import { SCHEMA, type Schema } from './schema';
+
+const client = createClient<Schema>(SCHEMA, {
+  baseUrl: 'http://localhost:3000/api/',
+  headers: {
+    'Authorization': 'Bearer <token>',
+  }
+});
+
+client.users.list({
+  page: 1,
+  limit: 10,
+  filter: {
+    name: {
+      ilike: 'C',
+    }
+  }
+}).then(console.log);
+``` 

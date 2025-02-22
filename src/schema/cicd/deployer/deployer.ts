@@ -46,6 +46,7 @@ export class SchemaDeployer {
         results.push(error);
       }
     }
+    await this.client.end();
     return results;
   }
 
