@@ -15,11 +15,11 @@ export const createPatchRoute = (api:API, name: string, table: Table) => {
         RETURNING *;
       `;
       const result = await api.client.query(statement, [id, ...values]);
-      res.status(200).send(result.rows[0]);
+      res.status(200).json(result.rows[0]);
     }
     catch (err) {
       console.log(err);
-      res.status(500).send(err);
+      res.status(500).json(err);
     }
   });
 }

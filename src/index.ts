@@ -1,2 +1,2 @@
 export type * from './schema';
-export * from './utils';
+export {sql} from './utils';

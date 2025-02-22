@@ -16,11 +16,11 @@ export const createPostRoute = (api:API, name: string, table: Table) => {
         RETURNING *;
       `;
       const result = await api.client.query(statement, values);
-      res.status(201).send(result.rows[0]);
+      res.status(201).json(result.rows[0]);
     }
     catch (err) {
       console.log(err);
-      res.status(500).send(err);
+      res.status(500).json(err);
     }
   });
 }

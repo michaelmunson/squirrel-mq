@@ -15,15 +15,15 @@ export const createDeleteRoute = (api:API, name: string, table: Table) => {
       const result = await api.client.query(statement, [id]);
       const rows = result.rows;
       if (!rows[0]) {
-        res.status(404).send({error: `Resource not found`});
+        res.status(404).json({error: `Resource not found`});
       }
       else {
-        res.status(200).send(rows[0]);
+        res.status(200).json(rows[0]);
       }
     }
     catch (err) {
       console.log(err);
-      res.status(500).send(err);
+      res.status(500).json(err);
     }
   });
 }

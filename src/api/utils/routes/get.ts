@@ -2,7 +2,7 @@ import { Table } from '../../../schema';
 import { API } from '../../api';
 import { sql } from '../../../utils';
 
-export const createGetRoute = (api:API, name: string, table: Table) => {
+export function createGetRoute(api:API, name: string, table: Table) {
   const columns = Object.keys(table).join(', ');
   const route = `${api.config.prefix}/${name}/:id`;
   if (!api.hasRoute(route)) api.app.get(route, async (req, res) => {
