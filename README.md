@@ -30,14 +30,14 @@ const tableDefaults = {
 
 export const SCHEMA = {
   users: {
-    id: AUTO_ID({unique: true}),
+    id: AUTO_ID(),
     name: VARCHAR(255),
     email: VARCHAR(255),
     age: INTEGER(),
     ...tableDefaults
   },
   posts: {
-    id: SERIAL({primaryKey: true}),
+    id: SERIAL(),
     title: VARCHAR(255),
     content: TEXT(),
     user_id: INTEGER({
@@ -51,13 +51,6 @@ export type Schema = SchemaType<typeof SCHEMA>
 ```
 
 ### Deploy the Schema
-```ts
-import { deploySchema } from 'squirrel-mq/deploy';
-
-deploySchema(SCHEMA);
-```
-
-### Deploy the Schema in CI/CD
 ```ts
 import { SchemaDeployer } from 'squirrel-mq/cicd';
 import { SCHEMA } from './schema';
