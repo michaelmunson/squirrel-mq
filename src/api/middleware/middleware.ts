@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
 
 type RequestHandlerParams = Parameters<RequestHandler>;
-type JsonMiddlewareReturn<R = void> = ((body: any) => any) | [statusCode: number, bodyFn: ((body: any) => any)] | R;
-export type JsonMiddleware<R = void> = (...args: RequestHandlerParams) => JsonMiddlewareReturn<R> | Promise<JsonMiddlewareReturn<R>>;
+type JsonMiddlewareReturn = ((body: any) => any) | [statusCode: number, bodyFn: ((body: any) => any)] | Readonly<[statusCode: number, bodyFn: ((body: any) => any)]> | void;
+export type JsonMiddleware = (...args: RequestHandlerParams) => JsonMiddlewareReturn | Promise<JsonMiddlewareReturn>;
 
 /**
  * @example
@@ -17,7 +17,7 @@ export type JsonMiddleware<R = void> = (...args: RequestHandlerParams) => JsonMi
   }) 
  * ```
 */ 
-export const createJsonMiddleware = <R = void>(handler: JsonMiddleware<R>) : RequestHandler => {
+export const createJsonMiddleware = (handler: JsonMiddleware) : RequestHandler => {
   return async function (req, res, next){
     const jsonHandler = await handler(req, res, next);
     const json = res.json;
@@ -32,11 +32,10 @@ export const createJsonMiddleware = <R = void>(handler: JsonMiddleware<R>) : Req
       res.json = (body: any) => {
         return json.call(res, bodyFn ? bodyFn(body) : body);
       }
-      res.status = (statusCode: number) => {
+      res.status = (_: number) => {
         return status.call(res, statusCode);
       }
     }
     next();
   }
 }
-

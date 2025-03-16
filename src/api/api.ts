@@ -77,6 +77,19 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
     this.initDefaultRoutes();
   }
 
+  /**
+   * @description 
+   * - Create a function that checks if the request matches the route and method.
+   * - Useful for middleware.
+   * @example
+   * ```typescript
+   * const isOp = api.createOpChecker(req);
+   * 
+   * if (isOp('users/:id', 'GET')) {
+   *   // Do something
+   * }
+   * ```
+   */
   createOpChecker(req:Request) {
     return (
       route: Parameters<typeof this.isOp>[1],
@@ -84,25 +97,41 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
     ) => this.isOp(req, route, method);
   }
 
+  /**
+   * @description 
+   * - Check if the request matches the route and method.
+   * - Useful for middleware.
+   * @example
+   * ```typescript
+   * api.isOp(req, 'users', 'GET');
+   * ```
+   */
   isOp(req: Request, route: APIRoute<this>[] | APIRoute<this>, method:HTTPMethod | HTTPMethod[] = [...HTTP_METHODS]) {
     const routes = Array.isArray(route) ? route : [route];
     const methods = Array.isArray(method) ? method : [method];
     const {method: reqMethod, route: reqRoute} = this.describeRequest(req);
     return routes.some((r) => r === reqRoute) && methods.some((m) => m === reqMethod);
   }
-  /* route<R extends keyof APIRouteMethods<this>, M extends keyof APIRouteMethods<this>[R]>(route:R, method:M) : APIRouteMethods<this>[R][M] {
-    return {} as any
-  }
 
-  routes() : APIRoutes<this> {
-    return {} as any
-  } */
-
+  /**
+   * @description Configure the API
+   * @example
+   * ```typescript
+   * api.configure({port: 3001});
+   * ```
+   */
   configure(config: APIConfig) {
     const mergedConfig = mergeDeep(this.config, config);
     this.config = mergedConfig;
   }
 
+  /**
+   * @description Check if the API has a route
+   * @example
+   * ```typescript
+   * api.hasRoute('/users');
+   * ```
+   */
   hasRoute(path: string) {
     return this.app._router.stack.some((route: any) => route.route?.path === path);
   }
@@ -147,27 +176,55 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
   }
 
   /**
-   * @description Add a middleware to the API that will be called before the request is processed.
+   * @description Add a middleware to the API that will help authorize requests
+   * @returns ```ts
+    type Return = (
+        // Return a status code and a function that will be called with the body of the response
+        [statusCode: number, bodyFunction: (body: any) => any] |
+        // Return a function that will be called with the body of the response
+        (body: any) => any
+    )
+   * ```
    * @example
    * ```typescript
-   * api.auth((req, res) => {
-   *   console.log('Request', req.body);
-   *   return req.body;
-   * });
+    api.auth(client => async (req, res, next) => {
+      const unauthorized = () => [401, () => ({error: 'Unauthorized'})];
+      const isOp = api.createOpChecker(req);
+      const token = req.headers['authorization'];
+      const {path} = api.describeRequest(req)
+      // Do not use a users email as your auth token, just an example
+      const user: Schema['users'] = await client.query('select * from users where email = $1', [token]).then(({rows}) => rows[0]);
+      if (!user) return unauthorized();
+      if (isOp('users/:id', 'GET')) {
+        if (user.id.toString() !== path.split('/').pop())
+          return unauthorized();
+      }
+    });
    * ```
    */
-  // auth(handlerOne: (client: PgClient) => RequestHandler) {
-  //   this.app.use(handlerOne(this.client));
-  // }
-  auth(handlerOne: (client: PgClient) => JsonMiddleware<any>) {
+  auth(handlerOne: (client: PgClient) => JsonMiddleware) {
     const handler = handlerOne(this.client);
     this.app.use(
-      createJsonMiddleware<any>(async function (req, res, next) {
+      createJsonMiddleware(async function (req, res, next) {
         return await handler(req, res, next);
       })
     );
   }
 
+  /**
+   * @description Start the API Server
+   * @example
+   * ```typescript
+   * api.start().then((err) => {
+   *   if (err) {
+   *     console.error(err);
+   *   }
+   *   else {
+   *     console.log(`API is running on port ${api.config.port}`);
+   *   }
+   * });
+   * ```
+   */
   async start(): Promise<Error | undefined> {
     await this.client.connect();
     this.initialize();

@@ -22,8 +22,13 @@ function incrementVersion(version="patch"){
 }
 
 function runTests(){
-  const code = execSync("npm run test");
-  console.log(code.toString());
+  try {
+    const code = execSync("npm run test");
+    console.log(code.toString());
+  } catch (error) {
+    console.error("\n\nTests failed");
+    process.exit(1);
+  }
 }
 
 function createDocs(){
