@@ -24,6 +24,7 @@ class SchemaDeployer {
       const result = await this.client.query(statement);
       results.push(result);
     }
+    await this.client.end();
     return results;
   }
 
@@ -53,6 +54,31 @@ class SchemaDeployer {
 
 }
 
+/**
+ * @description 
+ * Initialize the schema
+ * # WARNING - This will drop all existing tables and recreate them
+ */
+export async function initializeSchema(...params: ConstructorParameters<typeof SchemaDeployer>) {
+  const deployer = new SchemaDeployer(...params);
+  try {
+    return await deployer.initialize();
+  }
+  catch (error){
+    console.error(error);
+    deployer.client.end();
+    process.exit(1);
+  }
+  finally {
+    deployer.client.end();
+  }
+}
+
+/**
+ * @description 
+ * - Deploys the schema
+ * - This method preserves existing tables and only adds/removes/updates columns
+ */
 export async function deploySchema(...params: ConstructorParameters<typeof SchemaDeployer>) {
   const deployer = new SchemaDeployer(...params);
   try {

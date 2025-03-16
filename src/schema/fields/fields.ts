@@ -24,6 +24,11 @@ export const PK_AUTO_UUID = (options?:FieldOptions<string,false>):Field<string,f
     }
 });
 
+export const UUID = <N extends boolean>(options?:FieldOptions<string,N>):Field<string,N> => ({
+    type: 'UUID',
+    options
+});
+
 export const INTEGER = <N extends boolean>(options?:FieldOptions<number,N>):Field<number,N> => <const>({
     type: 'INTEGER',
     options
