@@ -1,8 +1,8 @@
 import express from 'express';
 import { SchemaInput } from '../schema';
-import { APIConfig } from './types';
+import { APIConfig, RouteExtensionRecord } from './types';
 import { PgClient } from '../pg';
-import { createSchemaRoutes } from './routes/utils';
+import { createDefaultRoutes } from './routes/utils';
 import * as dotenv from 'dotenv';
 import { PreAuthFunction } from './auth/types';
 import { caseConversionMiddleware } from './middleware';
@@ -19,17 +19,43 @@ const DEFAULT_CONFIG: APIConfig = {
   }
 }
 
-export class API<Schema extends SchemaInput = any, > {
+export class API<Schema extends SchemaInput = any, Extensions extends RouteExtensionRecord = {}> {
   readonly app: express.Application;
   readonly client: PgClient;
   config: APIConfig = DEFAULT_CONFIG;
-  constructor(readonly schema: Schema, config: APIConfig = DEFAULT_CONFIG) {
+  constructor(readonly schema: Schema, readonly extensions: Extensions = {} as Extensions, config: APIConfig = DEFAULT_CONFIG) {
     this.config = mergeDeep(DEFAULT_CONFIG, config);
     const app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     this.app = app;
     this.client = new PgClient(config.client);
+  }
+
+  private initDefaultRoutes() {
+    Object.entries(this.schema).forEach(([name, table]) => {
+      createDefaultRoutes(this, name, table);
+    });
+  }
+
+  private initExtensions() {
+    Object.entries(this.extensions).forEach(([name, {get, post, patch, delete: del, put}]) => {
+      if (get) {
+        this.app.get(name, get(this.client));
+      }
+      if (post) {
+        this.app.post(name, post(this.client));
+      }
+      if (patch) {
+        this.app.patch(name, patch(this.client));
+      }
+      if (del) {
+        this.app.delete(name, del(this.client));
+      }
+      if (put) {
+        this.app.put(name, put(this.client));
+      }
+    });
   }
 
   private initMiddleware() {
@@ -42,14 +68,13 @@ export class API<Schema extends SchemaInput = any, > {
 
   private initialize() {
     this.initMiddleware();
-    Object.entries(this.schema).forEach(([name, table]) => {
-      createSchemaRoutes(this , name, table);
-    });
+    this.initExtensions();
+    this.initDefaultRoutes();
   }
 
   configure(config: APIConfig) {
-    Object.assign(this.config, config);
-    this.initialize();
+    const mergedConfig = mergeDeep(this.config, config);
+    this.config = mergedConfig;
   }
 
   hasRoute(path: string) {
@@ -59,7 +84,6 @@ export class API<Schema extends SchemaInput = any, > {
   preAuth(rules: PreAuthFunction<Schema>) {
     return;
   }
-
 
   async start(): Promise<Error | undefined> {
     await this.client.connect();
@@ -72,6 +96,6 @@ export class API<Schema extends SchemaInput = any, > {
   }
 }
 
-export const createAPI = <Schema extends SchemaInput>(schema: Schema, config: APIConfig = DEFAULT_CONFIG) => {
-  return new API(schema, config);
+export const createApi = <Schema extends SchemaInput, Extensions extends RouteExtensionRecord = {}>(schema: Schema, extensions: Extensions, config: APIConfig = DEFAULT_CONFIG) => {
+  return new API<Schema, Extensions>(schema, extensions, config);
 }
