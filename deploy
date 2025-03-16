@@ -21,6 +21,11 @@ function incrementVersion(version="patch"){
   return packageJson.version;
 }
 
+function runTests(){
+  const code = execSync("npm run test");
+  console.log(code.toString());
+}
+
 function createDocs(){
   execSync("npm run create-docs");
 }
@@ -34,13 +39,14 @@ function push(version, message){
 }
 
 (() => {
+  runTests();
   const version = process.argv[2] || "patch";
-  const message = process.argv[3] ? ` - ${process.argv[3]}` : "";
   if (version !== "major" && version !== "minor" && version !== "patch" && version.split(".").length !== 3) {
     console.error("Invalid version argument. Must be one of: major, minor, patch, or x.x.x");
     process.exit(1);
   }
   const newVersion = incrementVersion(version);
+  const message = process.argv[3] ? ` - ${process.argv[3]}` : ``;
   createDocs();
   publish();
   push(newVersion, message);

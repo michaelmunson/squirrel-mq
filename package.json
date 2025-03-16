@@ -1,7 +1,7 @@
 {
-  "name": "squirrel-mq",
-  "version": "0.4.0",
-  "description": "SQL Message Queue",
+  "name": "squirrelify",
+  "version": "0.1.0",
+  "description": "PostgreSQL framework for bootstrapping your database, api, and client",
   "main": "dist/index.js",
   "files": [
     "dist/**/*"
@@ -26,11 +26,9 @@
     "url": "https://github.com/michaelmunson/mqsql"
   },
   "dependencies": {
-    "commander": "^5.1.0",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "pg": "^8.13.1",
-    "postgres": "^3.4.5"
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.7",
@@ -42,11 +40,5 @@
     "ts-jest": "^29.2.5",
     "typedoc": "^0.26.6",
     "typescript": "^5.6.3"
-  },
-  "peerDependencies": {
-    "mysql2": "^3.7.11"
-  },
-  "bin": {
-    "sqrl": "./dist/cli/index.js"
   }
 }
