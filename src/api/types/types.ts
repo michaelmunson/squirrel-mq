@@ -1,6 +1,10 @@
 import { PgClientParams } from "../../pg";
 import { API } from "../api";
 
+export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD', 'TRACE', 'CONNECT'] as const;
+
+export type HTTPMethod = typeof HTTP_METHODS[number];
+
 export type AllQuery = {
   page?: number;
   limit?: number;
@@ -75,3 +79,20 @@ export type APIConfig = {
 
 export type APISchema<T extends API> = T extends API<infer S> ? S : never;
 
+export type APIRoute<T extends API> = T extends API<infer S, infer E> ? (
+  keyof S extends string ? (keyof S | keyof ReturnType<E> | `${keyof S}/:id`) : never
+) : never
+
+export type APIRoutes<T extends API> = APIRoute<T>[]
+
+export type APIRouteMethods<T extends API> = T extends API<infer S, infer E> ? (
+  keyof S extends string ? {
+    [key in (keyof S | keyof ReturnType<E> | `${keyof S}/:id`)]: {
+      GET: (keyof (S[keyof S]))[];
+      POST: keyof (S[keyof S]);
+      PUT: keyof (S[keyof S]);
+      PATCH: keyof (S[keyof S]);
+      DELETE: keyof (S[keyof S]);
+    }
+  } : never
+) : never;

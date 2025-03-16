@@ -2,9 +2,7 @@ import { RequestHandler } from "express";
 import { convertRecordKeysToSnakeCase } from "../../utils/utils";
 import { convertRecordKeysToCamelCase } from "../../utils/utils";
 
-type MiddlewareFunction = RequestHandler;
-
-export const caseConversionMiddleware = ({inCase, outCase}: {inCase: 'snake' | 'camel', outCase: 'snake' | 'camel'}): MiddlewareFunction => {
+export const caseConversionMiddleware = ({inCase, outCase}: {inCase: 'snake' | 'camel', outCase: 'snake' | 'camel'}): RequestHandler => {
   return function (req, res, next){
     if (inCase === 'snake') {
       req.body = convertRecordKeysToSnakeCase(req.body);

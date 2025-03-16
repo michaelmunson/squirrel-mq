@@ -10,6 +10,7 @@ export type TypeMap = {
   DATETIME: string
   SERIAL: number
   TEXT: string
+  UUID: string
 }
 
 export type Type = keyof TypeMap
@@ -23,7 +24,6 @@ export type FieldOptions<T, Nullable extends boolean = true> = {
   withTimezone?: boolean,
   generatedAlwaysAsIdentity?: boolean,
   generatedByDefaultAsIdentity?: boolean,
-
 }
 
 export type Field<T, Nullable extends boolean = true> = {
@@ -48,3 +48,7 @@ export type ExtractFieldType<F extends Field<any,any> | CustomField<any>> = (
 
 export type ExtractFieldArgument<F extends Field<any,any>> = F extends Field<infer _, infer A> ? A : never;
 
+export type DefaultOptions = {
+  'CURRENT_TIMESTAMP': string
+  'gen_random_uuid()': string
+}

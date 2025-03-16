@@ -13,11 +13,20 @@ export type ApiExtensionMethods = Partial<{
   put: RequestHandler<any, any, any>;
 }>
 
-export type ApiExtensionRecord = Record<string, ApiExtensionMethods>;
+/**
+ * @description A record of API extension methods that can be used to extend the API
+ * @note The keys of the record must not start with a slash
+ * @example
+ * const api = createApi(schema, (api) => ({
+ *   'my-extension': {
+ *     get: () => {
+ *       return 'Hello World';
+ *     }
+ *   }
+ * }))
+ */
+export type ApiExtensionRecord = {[k:string]: ApiExtensionMethods} & {[K in `/${string}`]: never}
 export type ApiExtensionFunction = (self: API) => ApiExtensionRecord;
-
-
-
 /*
 
 export type ParsePathToObject<T extends string> =

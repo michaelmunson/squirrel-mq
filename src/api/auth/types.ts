@@ -1,4 +1,5 @@
 import { SchemaInput } from "../../schema/types";
+import { ApiExtensionFunction } from "../types";
 
 type AuthRuleAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE';
 type AuthRuleAllow<T> = boolean | ((keyof T)[]);
@@ -8,3 +9,7 @@ export type PreAuthRules<Schema extends SchemaInput = SchemaInput> = Partial<{
 }>
 
 export type PreAuthFunction<Schema extends SchemaInput = SchemaInput> = (token: string) => PreAuthRules<Schema>;
+
+export type AuthResponseRecord = {
+  status: 403
+}

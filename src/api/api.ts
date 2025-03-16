@@ -1,13 +1,14 @@
-import express from 'express';
+import express, {Request, RequestHandler} from 'express';
 import { SchemaInput } from '../schema';
-import { APIConfig, ApiExtensionFunction } from './types';
+import { APIConfig, ApiExtensionFunction, APIRoutes, APIRouteMethods, APIRoute, HTTPMethod, HTTP_METHODS } from './types';
 import { PgClient } from '../pg';
 import { createDefaultRoutes } from './routes/utils';
 import * as dotenv from 'dotenv';
-import { PreAuthFunction } from './auth/types';
 import { caseConversionMiddleware } from './middleware';
 import { mergeDeep } from '../utils';
 import { getFullPath as getPath } from './utils';
+import { createJsonMiddleware, JsonMiddleware } from './middleware/middleware';
+
 dotenv.config();
 
 const DEFAULT_CONFIG: APIConfig = {
@@ -76,6 +77,27 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
     this.initDefaultRoutes();
   }
 
+  createOpChecker(req:Request) {
+    return (
+      route: Parameters<typeof this.isOp>[1],
+      method: Parameters<typeof this.isOp>[2] = [...HTTP_METHODS]
+    ) => this.isOp(req, route, method);
+  }
+
+  isOp(req: Request, route: APIRoute<this>[] | APIRoute<this>, method:HTTPMethod | HTTPMethod[] = [...HTTP_METHODS]) {
+    const routes = Array.isArray(route) ? route : [route];
+    const methods = Array.isArray(method) ? method : [method];
+    const {method: reqMethod, route: reqRoute} = this.describeRequest(req);
+    return routes.some((r) => r === reqRoute) && methods.some((m) => m === reqMethod);
+  }
+  /* route<R extends keyof APIRouteMethods<this>, M extends keyof APIRouteMethods<this>[R]>(route:R, method:M) : APIRouteMethods<this>[R][M] {
+    return {} as any
+  }
+
+  routes() : APIRoutes<this> {
+    return {} as any
+  } */
+
   configure(config: APIConfig) {
     const mergedConfig = mergeDeep(this.config, config);
     this.config = mergedConfig;
@@ -85,8 +107,65 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
     return this.app._router.stack.some((route: any) => route.route?.path === path);
   }
 
-  preAuth(rules: PreAuthFunction<Schema>) {
-    return;
+  /**
+   * @description Remove the API's prefix from a path
+   * @example
+   * ```typescript
+   * api.relpath(req);
+   * // '/api/users' --> 'users'
+   * ```
+   */
+  relpath(path: string | Request) {
+    let newPath:string;
+    if (typeof path === 'string') {
+      newPath = path.replace(this.config.prefix ?? '', '');
+    }
+    else {
+      newPath = path.path.replace(this.config.prefix ?? '', '');
+    }
+    return newPath.startsWith('/') ? newPath.slice(1) : newPath;
+  }
+
+  /**
+   * @description Describe the operation of a request
+   * @example
+   * ```typescript
+   * const {path, method} =api.describeReqOp(req);
+   * ```
+   */
+  describeRequest(req: Request) {
+    let route:string | undefined = undefined;
+    const match = this.app._router.stack.find((layer: any) =>
+      layer.route && layer.route.path && req.path.match(layer.regexp)
+    );
+    if (match) {
+      route = this.relpath(match.route.path); // "/users/:id"
+    }
+    const path = this.relpath(req);
+    const method = req.method;
+    return {path, method, route};
+  }
+
+  /**
+   * @description Add a middleware to the API that will be called before the request is processed.
+   * @example
+   * ```typescript
+   * api.auth((req, res) => {
+   *   console.log('Request', req.body);
+   *   return req.body;
+   * });
+   * ```
+   */
+  // auth(handlerOne: (client: PgClient) => RequestHandler) {
+  //   this.app.use(handlerOne(this.client));
+  // }
+  auth(handlerOne: (client: PgClient) => JsonMiddleware<any>) {
+    const handler = handlerOne(this.client);
+    this.app.use(
+      createJsonMiddleware<any>(async function (req, res, next) {
+        return await handler(req, res, next);
+      })
+    );
   }
 
   async start(): Promise<Error | undefined> {
@@ -111,7 +190,8 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
   const api = createApi(
     schema,
     ({client}) => ({
-      '/example-users': {
+      // *note* The keys of the record must not start with a slash
+      'example-users': {
         get: $<Schema['users'][]>(async (req, res) => {
           const users = await client.query('SELECT * FROM users WHERE email ilike $1', [`%example.com%`]);
           res.status(200).json(users.rows);

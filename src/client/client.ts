@@ -2,6 +2,38 @@ import { API } from "../api";
 import { ApiClient, ApiClientConfig, ApiExtensions, ApiSchema } from "./types";
 import { getUrl } from "../utils";
 
+/**
+ * @description 
+ * Create a frontend client for the API, allowing easy access to the API's models and custom routes.
+ * @example
+ * ```ts
+  import { createClient } from "squirrel-mq/client";
+  import api from "./api";
+
+  const client = createClient(api, {
+    baseUrl: 'http://localhost:3000/',
+    headers: {
+      'Authorization': 'Bearer 1234567890',
+    }
+  });
+
+  client.models.posts.get(1).then(r => console.log(r));
+
+  client.models.posts.create({
+    title: 'My Post',
+    content: 'This is a post',
+  }).then(r => console.log(r));
+
+  client.custom('/example-users').post({
+    age: 20,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    id: 1,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(), 
+  }).then(r => console.log(r));
+  ```
+ */
 export const createClient = <A extends API>(api: A, config: ApiClientConfig) : ApiClient<A> => {
   config.baseUrl = getUrl(config.baseUrl, api.config.prefix ?? '')
   const schema = api.schema;
@@ -91,8 +123,3 @@ export const createClient = <A extends API>(api: A, config: ApiClientConfig) : A
   }
   return client;
 }
-
-
-// export const createApiClient = <A extends API>(api: A, config: ClientConfig) : ApiClient<A> => {
-//   return createClient(api.schema, config) as any;
-// }
