@@ -6,6 +6,7 @@ import { createSchemaRoutes } from './routes/utils';
 import * as dotenv from 'dotenv';
 import { PreAuthFunction } from './auth/types';
 import { caseConversionMiddleware } from './middleware';
+import { mergeDeep } from '../utils';
 
 dotenv.config();
 
@@ -21,9 +22,9 @@ const DEFAULT_CONFIG: APIConfig = {
 export class API<Schema extends SchemaInput = any, > {
   readonly app: express.Application;
   readonly client: PgClient;
-  readonly config: APIConfig;
+  config: APIConfig = DEFAULT_CONFIG;
   constructor(readonly schema: Schema, config: APIConfig = DEFAULT_CONFIG) {
-    this.config = { ...DEFAULT_CONFIG, ...config };
+    this.config = mergeDeep(DEFAULT_CONFIG, config);
     const app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
@@ -46,6 +47,11 @@ export class API<Schema extends SchemaInput = any, > {
     });
   }
 
+  configure(config: APIConfig) {
+    Object.assign(this.config, config);
+    this.initialize();
+  }
+
   hasRoute(path: string) {
     return this.app._router.stack.some((route: any) => route.route?.path === path);
   }
@@ -53,6 +59,7 @@ export class API<Schema extends SchemaInput = any, > {
   preAuth(rules: PreAuthFunction<Schema>) {
     return;
   }
+
 
   async start(): Promise<Error | undefined> {
     await this.client.connect();

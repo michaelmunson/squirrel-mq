@@ -1,4 +1,5 @@
-import { PgClientParams } from "../pg";
+import { PgClientParams } from "../../pg";
+import { API } from "../api";
 
 export type AllQuery = {
   page?: number;
@@ -45,7 +46,7 @@ export type APIConfig = {
   /**
    * @description The prefix to use for the API
    * @example '/api'
-   * @default '/'
+   * @default '/api'
   */
   prefix?: `/${string}`;
   /**
@@ -71,3 +72,10 @@ export type APIConfig = {
    */
   tokenHeader?: string;
 }
+
+export type APIExtensions = {
+  
+}
+
+export type APISchema<T extends API> = T extends API<infer S> ? S : never;
+
