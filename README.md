@@ -54,8 +54,8 @@ export type Schema = SchemaType<typeof schema>
 ### Step 2: Deploy the Schema
 ```ts
 // schema.deploy.ts
-import {schema} from "../schema";
-import { deploySchema } from "../../src/schema/cicd/deployer";
+import {schema} from "squirrel-mq/schema";
+import { deploySchema } from "squirrel-mq/schema/cicd/deployer";
 
 (async () => {
   const deployer = await deploySchema(schema);
@@ -66,8 +66,8 @@ import { deploySchema } from "../../src/schema/cicd/deployer";
 ### Step 3: Create an API
 ```ts
 // api.ts
-import { schema, type Schema } from "./schema";
-import { createApi, handler as $ } from "../src/api";
+import { schema, type Schema } from "squirrel-mq/schema";
+import { createApi, handler as $ } from "squirrel-mq/api";
 
 const api = createApi(
   schema,
@@ -101,7 +101,7 @@ export default api;
 ### Step 4: Start the API
 ```ts
 // serve.ts
-import api from './api';
+import api from 'squirrel-mq/api';
 
 api.start().then((err) => {
   if (err) {
@@ -116,8 +116,8 @@ api.start().then((err) => {
 ### Step 5: Create a Client
 ```ts
 // client.ts
-import { createClient } from "../src/client";
-import api from "./api";
+import { createClient } from "squirrel-mq/client";
+import api from "squirrel-mq/api";
 
 const client = createClient(api, {
   baseUrl: 'http://localhost:3000/',
