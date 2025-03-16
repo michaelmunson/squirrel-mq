@@ -58,8 +58,8 @@ import {schema} from "squirrel-mq/schema";
 import { deploySchema } from "squirrel-mq/schema/cicd/deployer";
 
 (async () => {
-  const deployer = await deploySchema(schema);
-  console.log(deployer);
+  const changeSet = await deploySchema(schema);
+  console.log(changeSet);
 })();
 ```
 
