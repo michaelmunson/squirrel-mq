@@ -20,6 +20,11 @@ const DEFAULT_CONFIG: APIConfig = {
   }
 }
 
+/**
+ * ---
+ * @see {@link createApi}
+ * ---
+ */
 export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtensionFunction = ApiExtensionFunction> {
   readonly app: express.Application;
   readonly client: PgClient;

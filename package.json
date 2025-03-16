@@ -1,6 +1,6 @@
 {
   "name": "squirrelify",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "PostgreSQL framework for bootstrapping your database, api, and client",
   "main": "dist/index.js",
   "files": [
@@ -14,7 +14,7 @@
     "./api": "./dist/api/index.js"
   },
   "scripts": {
-    "create-docs": "typedoc --out ./docs ./src/index.ts",
+    "create-docs": "typedoc --out ./docs ./src/index.ts ./src/api/index.ts ./src/client/index.ts ./src/schema/index.ts",
     "build": "tsc",
     "test": "jest",
     "cli-init": "npm i && npm run build && chmod +x ./dist/cli/index.js && npm link --local"
