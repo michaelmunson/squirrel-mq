@@ -1,10 +1,10 @@
 import express from 'express';
-import { SchemaInput, Table } from '../schema';
+import { SchemaInput } from '../schema';
 import { APIConfig } from './types';
 import { PgClient } from '../pg';
-import { createTableRoutes } from './utils';
+import { createSchemaRoutes } from './routes/utils';
 import * as dotenv from 'dotenv';
-import { PreAuthFunction } from './utils/auth/types';
+import { PreAuthFunction } from './auth/types';
 import { caseConversionMiddleware } from './middleware';
 
 dotenv.config();
@@ -42,7 +42,7 @@ export class API<Schema extends SchemaInput = any, > {
   private initialize() {
     this.initMiddleware();
     Object.entries(this.schema).forEach(([name, table]) => {
-      createTableRoutes(this , name, table);
+      createSchemaRoutes(this , name, table);
     });
   }
 

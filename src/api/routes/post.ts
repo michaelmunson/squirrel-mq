@@ -1,6 +1,6 @@
-import { Table } from '../../../schema';
-import { API } from '../../api';
-import { sql } from '../../../utils';
+import { Table } from '../../schema';
+import { API } from '../api';
+import { sql } from '../../utils';
 
 export const createPostRoute = (api:API, name: string, table: Table) => {
   const route = `${api.config.prefix}/${name}`;

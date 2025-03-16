@@ -38,15 +38,36 @@ export type ListParams<T> = {
 
 export type APIConfig = {
   client?: PgClientParams;
+  /**
+   * @description The port to run the API on
+   */
   port?: number;
+  /**
+   * @description The prefix to use for the API
+   * @example '/api'
+   * @default '/'
+  */
   prefix?: `/${string}`;
+  /**
+   * @description The case conversion to use for the API
+   * @example { in: 'snake', out: 'camel' }
+   */
   caseConversion?: {
     in: 'snake' | 'camel';
     out: 'snake' | 'camel';
   }
+  /**
+   * @description The pagination to use for the API
+   * @example { defaultPage: 1, defaultLimit: 10 }
+   */
   pagination?: {
     defaultPage?: number;
     defaultLimit?: number;
   }
+  /**
+   * @description The header to use for the API
+   * @example 'Authorization'
+   * @default 'Authorization'
+   */
   tokenHeader?: string;
 }

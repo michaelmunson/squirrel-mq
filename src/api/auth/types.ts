@@ -1,4 +1,4 @@
-import { SchemaInput } from "../../../schema/types";
+import { SchemaInput } from "../../schema/types";
 
 type AuthRuleAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE';
 type AuthRuleAllow<T> = boolean | ((keyof T)[]);
