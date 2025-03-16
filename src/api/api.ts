@@ -1,6 +1,6 @@
 import express from 'express';
 import { SchemaInput } from '../schema';
-import { APIConfig, ApiExtensionFunction, ApiExtensionRecord } from './types';
+import { APIConfig, ApiExtensionFunction } from './types';
 import { PgClient } from '../pg';
 import { createDefaultRoutes } from './routes/utils';
 import * as dotenv from 'dotenv';
@@ -100,6 +100,57 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
   }
 }
 
+/**
+ * @description Create a new API instance
+ * @example 
+ * Define an API
+ * ```typescript
+  import { schema, type Schema } from "./schema";
+  import { createApi, handler as $ } from "../src/api";
+
+  const api = createApi(
+    schema,
+    ({client}) => ({
+      '/example-users': {
+        get: $<Schema['users'][]>(async (req, res) => {
+          const users = await client.query('SELECT * FROM users WHERE email ilike $1', [`%example.com%`]);
+          res.status(200).json(users.rows);
+        }),
+        post: $<Schema['users'], Schema['users']>(async (req, res) => {
+          const user = await client.query('select * from users where id = 2');
+          res.status(200).json(user.rows[0]);
+        })
+      }
+    }),
+    {
+      caseConversion: {
+        in: 'snake',
+        out: 'camel',
+      },
+      pagination: {
+        defaultPage: 1,
+        defaultLimit: 10,
+      }
+    }
+  );
+
+  export default api;
+  * ```
+  * @example
+  * Start the API
+  * ```typescript
+    import api from './api';
+
+    api.start().then((err) => {
+      if (err) {
+        console.error(err);
+      }
+      else {
+        console.log(`API is running on port ${api.config.port}`);
+      }
+    });
+  * ```
+ */
 export const createApi = <Schema extends SchemaInput, ExtensionFn extends ApiExtensionFunction>(schema: Schema, extensionFn: ExtensionFn, config: APIConfig = DEFAULT_CONFIG) => {
   return new API<Schema, ExtensionFn>(schema, extensionFn, config);
 }

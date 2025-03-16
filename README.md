@@ -10,34 +10,35 @@ npm install squirrel-mq
 
 ## Usage
 
-### Create a Schema
+### Step 1: Define the Schema
 ```ts
 // schema.ts
-
-import {type SchemaType, AUTO_ID, INTEGER, SERIAL, TEXT, TIMESTAMP, VARCHAR} from 'squirrel-mq/schema';
-
+import {AUTO_ID, INTEGER, SERIAL, TEXT, TIMESTAMP, VARCHAR} from 'squirrel-mq/schema/fields';
+import { SchemaType } from 'squirrel-mq/schema';
 
 const tableDefaults = {
   created_at: TIMESTAMP({
     default: 'CURRENT_TIMESTAMP',
     withTimezone: true,
+    nullable: false,
   }),
   updated_at: TIMESTAMP({
     default: 'CURRENT_TIMESTAMP',
     withTimezone: true,
+    nullable: false,
   })
 }
 
-export const SCHEMA = {
+export const schema = {
   users: {
     id: AUTO_ID(),
-    name: VARCHAR(255),
+    name: VARCHAR(255, {nullable: false}),
     email: VARCHAR(255),
     age: INTEGER(),
     ...tableDefaults
   },
   posts: {
-    id: SERIAL(),
+    id: AUTO_ID(),
     title: VARCHAR(255),
     content: TEXT(),
     user_id: INTEGER({
@@ -47,50 +48,92 @@ export const SCHEMA = {
   }
 }
 
-export type Schema = SchemaType<typeof SCHEMA>
+export type Schema = SchemaType<typeof schema>
 ```
 
-### Deploy the Schema
+### Step 2: Deploy the Schema
 ```ts
-import { SchemaDeployer } from 'squirrel-mq/cicd';
-import { SCHEMA } from './schema';
+// schema.deploy.ts
+import {schema} from "../schema";
+import { deploySchema } from "../../src/schema/cicd/deployer";
 
-const deployer = new SchemaDeployer(SCHEMA);
-
-deployer.deploy().then(() => console.log('Schema Deployed'));
+(async () => {
+  const deployer = await deploySchema(schema);
+  console.log(deployer);
+})();
 ```
 
-### Create an API
+### Step 3: Create an API
 ```ts
-import { createAPI } from 'squirrel-mq/api';
-import { SCHEMA } from './schema';
+// api.ts
+import { schema, type Schema } from "./schema";
+import { createApi, handler as $ } from "../src/api";
 
-const api = createAPI(SCHEMA, {
-  port: 3000,
-});
-
-api.start().then(() => console.log(`Server started on port ${api.config.port}`));
-```
-
-### Create a Client
-```ts
-import { createClient } from 'squirrel-mq/client';
-import { SCHEMA, type Schema } from './schema';
-
-const client = createClient<Schema>(SCHEMA, {
-  baseUrl: 'http://localhost:3000/api/',
-  headers: {
-    'Authorization': 'Bearer <token>',
-  }
-});
-
-client.users.list({
-  page: 1,
-  limit: 10,
-  filter: {
-    name: {
-      ilike: 'C',
+const api = createApi(
+  schema,
+  ({client}) => ({
+    '/example-users': {
+      get: $<Schema['users'][]>(async (req, res) => {
+        const users = await client.query('SELECT * FROM users WHERE email ilike $1', [`%example.com%`]);
+        res.status(200).json(users.rows);
+      }),
+      post: $<Schema['users'], Schema['users']>(async (req, res) => {
+        const user = await client.query('select * from users where id = 2');
+        res.status(200).json(user.rows[0]);
+      })
+    }
+  }),
+  {
+    caseConversion: {
+      in: 'snake',
+      out: 'camel',
+    },
+    pagination: {
+      defaultPage: 1,
+      defaultLimit: 10,
     }
   }
-}).then(console.log);
+);
+
+export default api;
+```
+
+### Step 4: Start the API
+```ts
+// serve.ts
+import api from './api';
+
+api.start().then((err) => {
+  if (err) {
+    console.error(err);
+  }
+  else {
+    console.log(`API is running on port ${api.config.port}`);
+  }
+});
+```
+
+### Step 5: Create a Client
+```ts
+// client.ts
+import { createClient } from "../src/client";
+import api from "./api";
+
+const client = createClient(api, {
+  baseUrl: 'http://localhost:3000/',
+  headers: {
+    'Authorization': 'Bearer 1234567890',
+  }
+});
+
+client.models.posts.get(1).then(r => console.log(r));
+
+client.custom('/example-users').post({
+  age: 20,
+  name: 'John Doe',
+  email: 'john.doe@example.com',
+  id: 1,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+}).then(r => console.log(r));
 ``` 
