@@ -8,6 +8,8 @@ Squirrel MQ is a lightweight, zero-dependency, and type-safe SQL builder for Typ
 npm install squirrel-mq
 ```
 
+## [Complete Documentation](https://michaelmunson.github.io/squirrel-mq/)
+
 ## Usage
 
 ### Step 1: Define the Schema
