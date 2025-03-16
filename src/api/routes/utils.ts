@@ -2,7 +2,7 @@
 import { Table } from '../../schema';
 import { API } from '../api';
 import { createAllRoute, createGetRoute, createPostRoute, createPatchRoute, createDeleteRoute } from './';
-import { RouteExtensionRecord } from '../types/extensions';
+import { ApiExtensionRecord } from '../types/extensions';
 import { RequestHandler } from 'express';
 
 export const createDefaultRoutes = (api:API, name: string, table: Table) => {
@@ -50,5 +50,5 @@ export const createDefaultRoutes = (api:API, name: string, table: Table) => {
   });
   * ```
 */
-export const createRoutes = <T extends RouteExtensionRecord>(ext: T) => <const>{...ext};
+export const createRoutes = <T extends ApiExtensionRecord>(ext: T) => <const>{...ext};
 export const handler = <Output,Input = undefined>(reqFn:RequestHandler<any, Output, Input>) => reqFn;

@@ -47,3 +47,17 @@ export const mergeDeep = (target: any, source: any) => {
   }
   return output;
 }
+
+export const getUrl = (...paths: string[]) => {
+  const url = paths
+  .map(
+    p => p.trim()
+  )
+  .filter(Boolean)
+  .map(p => (
+    p.startsWith('/') ? p.slice(1) : p
+  ))
+  .map(p => p.endsWith('/') ? p.slice(0, -1) : p)
+  .join('/');
+  return url.endsWith('/') ? url.slice(0,-1) : url;
+}

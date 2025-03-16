@@ -1,16 +1,49 @@
-import { SchemaInput, SchemaType } from "../schema";
-import { Client, ClientConfig } from "./types";
-import { SnakeToCamelCaseObject } from "./utils";
+import { API } from "../api";
+import { ApiClient, ApiClientConfig, ApiExtensions, ApiSchema } from "./types";
+import { getUrl } from "../utils";
 
-const sanitizeBaseUrl = (baseUrl: string) => {
-  return baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-}
+export const createClient = <A extends API>(api: A, config: ApiClientConfig) : ApiClient<A> => {
+  config.baseUrl = getUrl(config.baseUrl, api.config.prefix ?? '')
+  const schema = api.schema;
+  const client:ApiClient<A> = {
+    models: {},
+    custom: (route:keyof ApiExtensions<A>) => ({
+      get: () => fetch(getUrl(route as string, config.baseUrl), {
+        method: 'GET',
+        headers: config.headers,
+      }).then(res => res.json()),
+      post: (data:any) => fetch(getUrl(route as string, config.baseUrl), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...config.headers,
+        },
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+      patch: (data:any) => fetch(getUrl(route as string, config.baseUrl), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...config.headers,
+        },
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+      delete: () => fetch(getUrl(route as string, config.baseUrl), {
+        method: 'DELETE',
+      }).then(res => res.json()),
+      put: (data:any) => fetch(getUrl(route as string, config.baseUrl), {
+        method: 'PUT',
+        headers: {  
+          'Content-Type': 'application/json',
+          ...config.headers,
+        },
+        body: JSON.stringify(data),
+      }).then(res => res.json()),
+    })
+  } as any;
 
-export const createClient = <T extends SchemaType<any>>(schema: SchemaInput, config: ClientConfig) : Client<{[K in keyof T]: SnakeToCamelCaseObject<T[K]>}> => {
-  config.baseUrl = sanitizeBaseUrl(config.baseUrl);
-  const client:Client<{[K in keyof T]: SnakeToCamelCaseObject<T[K]>}> = {} as any;
   for (const key in schema) {
-    client[key as keyof T] = {
+    client.models[key as keyof ApiSchema<A>] = {
       get(id) {
         const url = `${config.baseUrl}/${key as string}/${id}`;
         return fetch(url, {
@@ -58,3 +91,8 @@ export const createClient = <T extends SchemaType<any>>(schema: SchemaInput, con
   }
   return client;
 }
+
+
+// export const createApiClient = <A extends API>(api: A, config: ClientConfig) : ApiClient<A> => {
+//   return createClient(api.schema, config) as any;
+// }

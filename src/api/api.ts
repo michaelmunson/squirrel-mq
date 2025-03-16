@@ -1,13 +1,13 @@
 import express from 'express';
 import { SchemaInput } from '../schema';
-import { APIConfig, RouteExtensionRecord } from './types';
+import { APIConfig, ApiExtensionFunction, ApiExtensionRecord } from './types';
 import { PgClient } from '../pg';
 import { createDefaultRoutes } from './routes/utils';
 import * as dotenv from 'dotenv';
 import { PreAuthFunction } from './auth/types';
 import { caseConversionMiddleware } from './middleware';
 import { mergeDeep } from '../utils';
-
+import { getFullPath as getPath } from './utils';
 dotenv.config();
 
 const DEFAULT_CONFIG: APIConfig = {
@@ -19,17 +19,19 @@ const DEFAULT_CONFIG: APIConfig = {
   }
 }
 
-export class API<Schema extends SchemaInput = any, Extensions extends RouteExtensionRecord = {}> {
+export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtensionFunction = ApiExtensionFunction> {
   readonly app: express.Application;
   readonly client: PgClient;
   config: APIConfig = DEFAULT_CONFIG;
-  constructor(readonly schema: Schema, readonly extensions: Extensions = {} as Extensions, config: APIConfig = DEFAULT_CONFIG) {
+  readonly extensionFn: ExtensionFn;
+  constructor(readonly schema: Schema, extensionFn: ExtensionFn, config: APIConfig = DEFAULT_CONFIG) {
     this.config = mergeDeep(DEFAULT_CONFIG, config);
     const app = express();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     this.app = app;
     this.client = new PgClient(config.client);
+    this.extensionFn = extensionFn;
   }
 
   private initDefaultRoutes() {
@@ -39,21 +41,23 @@ export class API<Schema extends SchemaInput = any, Extensions extends RouteExten
   }
 
   private initExtensions() {
-    Object.entries(this.extensions).forEach(([name, {get, post, patch, delete: del, put}]) => {
+    const extensions = this.extensionFn(this);
+    Object.entries(extensions).forEach(([name, methods]) => {
+      const {get, post, patch, delete: del, put} = methods;
       if (get) {
-        this.app.get(name, get(this.client));
+        this.app.get(getPath(name, this.config.prefix), get);
       }
       if (post) {
-        this.app.post(name, post(this.client));
+        this.app.post(getPath(name, this.config.prefix), post);
       }
       if (patch) {
-        this.app.patch(name, patch(this.client));
+        this.app.patch(getPath(name, this.config.prefix), patch);
       }
       if (del) {
-        this.app.delete(name, del(this.client));
+        this.app.delete(getPath(name, this.config.prefix), del);
       }
       if (put) {
-        this.app.put(name, put(this.client));
+        this.app.put(getPath(name, this.config.prefix), put);
       }
     });
   }
@@ -96,6 +100,6 @@ export class API<Schema extends SchemaInput = any, Extensions extends RouteExten
   }
 }
 
-export const createApi = <Schema extends SchemaInput, Extensions extends RouteExtensionRecord = {}>(schema: Schema, extensions: Extensions, config: APIConfig = DEFAULT_CONFIG) => {
-  return new API<Schema, Extensions>(schema, extensions, config);
+export const createApi = <Schema extends SchemaInput, ExtensionFn extends ApiExtensionFunction>(schema: Schema, extensionFn: ExtensionFn, config: APIConfig = DEFAULT_CONFIG) => {
+  return new API<Schema, ExtensionFn>(schema, extensionFn, config);
 }

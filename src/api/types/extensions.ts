@@ -1,15 +1,22 @@
 import { RequestHandler } from "express";
-import { PgClient } from "../../pg";
+import { API } from "../api";
 
-export type RouteExtensionMethods = Partial<{
-  get: (client?: PgClient) => RequestHandler<any, any, any>;
-  post: (client?: PgClient) => RequestHandler<any, any, any>;
-  patch: (client?: PgClient) => RequestHandler<any, any, any>;
-  delete: (client?: PgClient) => RequestHandler<any, any, any>;
-  put: (client?: PgClient) => RequestHandler<any, any, any>;
+export {
+  type RequestHandler,
+}
+
+export type ApiExtensionMethods = Partial<{
+  get: RequestHandler<any, any, any>;
+  post: RequestHandler<any, any, any>;
+  patch: RequestHandler<any, any, any>;
+  delete: RequestHandler<any, any, any>;
+  put: RequestHandler<any, any, any>;
 }>
 
-export type RouteExtensionRecord = Record<string, RouteExtensionMethods>;
+export type ApiExtensionRecord = Record<string, ApiExtensionMethods>;
+export type ApiExtensionFunction = (self: API) => ApiExtensionRecord;
+
+
 
 /*
 

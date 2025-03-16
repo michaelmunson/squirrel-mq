@@ -73,9 +73,5 @@ export type APIConfig = {
   tokenHeader?: string;
 }
 
-export type APIExtensions = {
-  
-}
-
 export type APISchema<T extends API> = T extends API<infer S> ? S : never;
 
