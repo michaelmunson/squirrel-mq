@@ -3,8 +3,9 @@ import { createSchemaSql, SchemaInput } from "../../../schema";
 import { SqrlPgClient } from "../../../pg";
 import { SchemaChange, SchemaDeployerConfig } from "./types";
 import { getSchemaChangeset, DEFAULT_CONFIG, convertSchemaChangesetToSql } from "./utils";
+import { QueryResult } from "pg";
 
-export class SchemaDeployer {
+class SchemaDeployer {
   readonly client: SqrlPgClient;
   constructor(private readonly schema: SchemaInput, private readonly config: SchemaDeployerConfig = DEFAULT_CONFIG) {
     this.client = new SqrlPgClient(this.config.client);
@@ -37,13 +38,13 @@ export class SchemaDeployer {
     if (!this.client.connected) await this.client.connect();
     const changeSet = _changeSet ?? await this.getChangeSet();
     const statements = convertSchemaChangesetToSql(changeSet);
-    const results = [];
+    const results:Map<string, QueryResult|Error> = new Map();
     for (const statement of statements) {
       try {
         const result = await this.client.query(statement);
-        results.push(result);
+        results.set(statement, result);
       } catch (error) {
-        results.push(error);
+        results.set(statement, error as Error);
       }
     }
     await this.client.end();
@@ -52,6 +53,17 @@ export class SchemaDeployer {
 
 }
 
+export async function deploySchema(...params: ConstructorParameters<typeof SchemaDeployer>) {
+  const deployer = new SchemaDeployer(...params);
+  try {
+    return await deployer.deploy();
+  }
+  catch (error){
+    console.error(error);
+    deployer.client.end();
+    process.exit(1);
+  }
+}
 /*
 
 export const initializeSchema = async (schema: SchemaInput, ...params: ConstructorParameters<typeof Client>) => {

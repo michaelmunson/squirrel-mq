@@ -48,4 +48,5 @@ export type APIConfig = {
     defaultPage?: number;
     defaultLimit?: number;
   }
+  tokenHeader?: string;
 }
