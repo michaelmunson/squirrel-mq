@@ -4,3 +4,14 @@
 .github
 tests/
 .md
+src/
+.builder
+tests/
+examples/
+docs/
+jest.config.js
+.gitignore
+.git
+.vscode
+.env
+.env.local
