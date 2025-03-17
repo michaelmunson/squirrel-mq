@@ -1,3 +1,3 @@
 export * from './types';
 export * from './api';
-export * from './routes/utils';
+export {createDefaultRoutes, createRoutes, handler} from './routes/utils';

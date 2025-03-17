@@ -4,7 +4,7 @@ import { sql } from '../../../utils';
 
 export const createDeleteRoute = (api:API, name: string, table: Table) => {
   const route = `${api.config.prefix}/${name}/:id`;
-  if (!api.hasRoute(route)) api.app.delete(route, async (req, res) => {
+  if (!api.hasRoute(route, 'DELETE')) api.app.delete(route, async (req, res) => {
     try {
       const id = req.params.id;
       const statement = sql`
@@ -22,7 +22,7 @@ export const createDeleteRoute = (api:API, name: string, table: Table) => {
       }
     }
     catch (err) {
-      console.log(err);
+      if (process.env.VERBOSE === 'true') console.log(err);
       res.status(500).json(err);
     }
   });

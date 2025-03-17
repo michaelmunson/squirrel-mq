@@ -5,7 +5,7 @@ import { sql } from '../../../utils';
 export function createGetRoute(api: API, name: string, table: Table) {
   const columns = Object.keys(table).join(', ');
   const route = `${api.config.prefix}/${name}/:id`;
-  if (!api.hasRoute(route))
+  if (!api.hasRoute(route, 'GET'))
     api.app.get(route, async (req, res) => {
       try {
         const statement = (

@@ -1,9 +1,16 @@
 
 import { Table } from '../../schema';
 import { API } from '../api';
-import { createAllRoute, createGetRoute, createPostRoute, createPatchRoute, createDeleteRoute } from './';
+import { createAllRoute, createGetRoute, createPostRoute, createPatchRoute, createDeleteRoute } from './index';
 import { ApiExtensionRecord } from '../types/extensions';
 import { RequestHandler } from 'express';
+
+export const modifyValue = (value: any) => {
+  if (Array.isArray(value)) {
+    return `{${value.join(',')}}`;
+  }
+  return value;
+}
 
 export const createDefaultRoutes = (api:API, name: string, table: Table) => {
   createAllRoute(api, name, table);

@@ -137,8 +137,8 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
    * api.hasRoute('/users');
    * ```
    */
-  hasRoute(path: string) {
-    return this.app._router.stack.some((route: any) => route.route?.path === path);
+  hasRoute(path: string, method: HTTPMethod) {
+    return this.app._router.stack.some((route: any) => route.route?.path === path && route.route?.methods[method]);
   }
 
   /**
@@ -233,7 +233,7 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
   async start(): Promise<Error | undefined> {
     await this.client.connect();
     this.initialize();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.app.listen(this.config.port, (...args) => {
         resolve(...args);
       });

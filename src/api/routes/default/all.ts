@@ -71,7 +71,7 @@ const getFilterStatements = (filter: FilterParams<Record<string, string>>, index
 export const createAllRoute = (api: API, name: string, table: Table) => {
   const columns = Object.keys(table).join(', ');
   const route = `${api.config.prefix}/${name}`;
-  if (!api.hasRoute(route))
+  if (!api.hasRoute(route, 'GET'))
     api.app.get(route, async (req, res) => {
       try {
         const { page = api.config.pagination?.defaultPage ?? 1, limit = api.config.pagination?.defaultLimit ?? 10, filter = '{}' } = req.query as AllQuery;
@@ -87,7 +87,7 @@ export const createAllRoute = (api: API, name: string, table: Table) => {
         res.status(200).json(result.rows);
       }
       catch (err) {
-        console.error(err);
+        if (process.env.VERBOSE === 'true') console.error(err);
         res.status(500).json(err);
       }
     });
