@@ -16,3 +16,5 @@ jest.config.cjs
 .vscode
 .env
 .env.local
+tsup.config.ts
+tsconfig.json

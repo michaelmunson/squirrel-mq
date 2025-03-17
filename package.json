@@ -1,23 +1,40 @@
 {
   "name": "squirrelify",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "description": "PostgreSQL framework for bootstrapping your database, api, and client",
-  "main": "dist/index.js",
   "type": "module",
-  "module": "dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js",
-    "./schema": "./dist/schema/index.js",
-    "./schema/fields": "./dist/schema/fields/fields.js",
-    "./client": "./dist/client/index.js",
-    "./api": "./dist/api/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "require": "./dist/schema/index.cjs",
+      "import": "./dist/schema/index.js"
+    },
+    "./schema/fields": {
+      "types": "./dist/schema/fields/index.d.ts",
+      "require": "./dist/schema/fields/index.cjs",
+      "import": "./dist/schema/fields/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "require": "./dist/client/index.cjs",
+      "import": "./dist/client/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "require": "./dist/api/index.cjs",
+      "import": "./dist/api/index.js"
+    }
   },
-  "files": [
-    "dist/**/*"
-  ],
   "scripts": {
     "create-docs": "typedoc --out ./docs ./src/index.ts ./src/api/index.ts ./src/client/index.ts ./src/schema/index.ts",
-    "build": "tsc",
+    "build": "tsup",
     "test": "jest",
     "cli-init": "npm i && npm run build && chmod +x ./dist/cli/index.js && npm link --local"
   },
@@ -40,6 +57,7 @@
     "@types/pg": "^8.11.11",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
+    "tsup": "^8.4.0",
     "typedoc": "^0.26.6",
     "typescript": "^5.6.3"
   }

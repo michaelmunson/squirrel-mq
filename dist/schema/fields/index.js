@@ -1,19 +1,68 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+// src/schema/fields/fields.ts
+var defaults = {};
+var SQL = (sql) => ({ type: "$", statement: sql });
+var PK_AUTO_INT = (options) => ({
+  type: "INTEGER",
+  options: {
+    ...options,
+    generatedAlwaysAsIdentity: true,
+    primaryKey: true
+  }
+});
+var PK_AUTO_UUID = (options) => ({
+  type: "UUID",
+  options: {
+    ...options,
+    primaryKey: true,
+    default: "gen_random_uuid()"
+  }
+});
+var UUID = (options) => ({
+  type: "UUID",
+  options
+});
+var INTEGER = (options) => ({
+  type: "INTEGER",
+  options
+});
+var VARCHAR = (value, options) => ({
+  type: "VARCHAR",
+  argument: value,
+  options
+});
+var SERIAL = (options) => ({
+  type: "SERIAL",
+  options
+});
+var TEXT = (options) => ({
+  type: "TEXT",
+  options
+});
+var BOOLEAN = (options) => ({
+  type: "BOOLEAN",
+  options
+});
+var TIMESTAMP = (options) => ({
+  type: "TIMESTAMP",
+  options
+});
+var ENUM = (value, options) => ({
+  type: "ENUM",
+  argument: value,
+  options
+});
+export {
+  BOOLEAN,
+  ENUM,
+  INTEGER,
+  PK_AUTO_INT,
+  PK_AUTO_UUID,
+  SERIAL,
+  SQL,
+  TEXT,
+  TIMESTAMP,
+  UUID,
+  VARCHAR,
+  defaults
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./fields"), exports);
-__exportStar(require("./utils"), exports);
-__exportStar(require("./types"), exports);
+//# sourceMappingURL=index.js.map
