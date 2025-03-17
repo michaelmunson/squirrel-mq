@@ -50,6 +50,10 @@ var ENUM = (value, options) => ({
   argument: value,
   options
 });
+var JSONB = (options) => ({
+  type: "JSONB",
+  options
+});
 
 // src/schema/table/types.ts
 var TableMap = class extends Map {
@@ -329,6 +333,7 @@ export {
   BOOLEAN,
   ENUM,
   INTEGER,
+  JSONB,
   PK_AUTO_INT,
   PK_AUTO_UUID,
   PostgresTableMap,

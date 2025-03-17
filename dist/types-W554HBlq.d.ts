@@ -11,6 +11,7 @@ type TypeMap = {
     SERIAL: number;
     TEXT: string;
     UUID: string;
+    JSONB: Record<any, any>;
 };
 type Type = keyof TypeMap;
 type FieldOptions<T, Nullable extends boolean = true, IsArray extends boolean = false> = {
@@ -34,8 +35,8 @@ type CustomField<T = any> = {
     value?: T;
     statement: string;
 };
-type ExtractFieldType<F extends Field<any, any> | CustomField<any>> = (F extends Field<infer T, infer N, infer A> ? ((A extends true ? T[] : T) | (N extends true ? null : never)) : (F extends CustomField<infer T> ? T : never));
-type ExtractFieldArgument<F extends Field<any, any>> = F extends Field<infer _, infer A> ? A : never;
+type ExtractFieldType<F extends Field<any, any, any> | CustomField<any>> = (F extends Field<infer T, infer N, infer A> ? ((A extends true ? T[] : T) | (N extends true ? null : never)) : (F extends CustomField<infer T> ? T : never));
+type ExtractFieldArgument<F extends Field<any, any, any>> = F extends Field<infer _, infer A, infer _> ? A : never;
 type DefaultOptions = {
     'CURRENT_TIMESTAMP': string;
     'gen_random_uuid()': string;

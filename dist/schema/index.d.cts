@@ -1,8 +1,8 @@
-export { BOOLEAN, ENUM, INTEGER, PK_AUTO_INT, PK_AUTO_UUID, SERIAL, SQL, TEXT, TIMESTAMP, UUID, VARCHAR } from './fields/index.cjs';
-import { b as Field, C as CustomField } from '../types-A55kQuZm.cjs';
-export { D as DefaultOptions, c as ExtractFieldArgument, E as ExtractFieldType, F as FieldOptions, a as Type, T as TypeMap } from '../types-A55kQuZm.cjs';
-import { f as PgClient, g as PgClientParams, e as PostgresSchemaMap, a as Table, S as SchemaInput } from '../types-2zreMSQi.cjs';
-export { P as PostgresTableMap, d as SchemaMap, c as SchemaType, T as TableInput, b as TableMap } from '../types-2zreMSQi.cjs';
+export { BOOLEAN, ENUM, INTEGER, JSONB, PK_AUTO_INT, PK_AUTO_UUID, SERIAL, SQL, TEXT, TIMESTAMP, UUID, VARCHAR } from './fields/index.cjs';
+import { b as Field, C as CustomField } from '../types-W554HBlq.cjs';
+export { D as DefaultOptions, c as ExtractFieldArgument, E as ExtractFieldType, F as FieldOptions, a as Type, T as TypeMap } from '../types-W554HBlq.cjs';
+import { f as PgClient, g as PgClientParams, e as PostgresSchemaMap, a as Table, S as SchemaInput } from '../types-Dw9Q3g5N.cjs';
+export { P as PostgresTableMap, d as SchemaMap, c as SchemaType, T as TableInput, b as TableMap } from '../types-Dw9Q3g5N.cjs';
 import { Client, QueryResult } from 'pg';
 
 declare class SqrlPgClient extends PgClient {

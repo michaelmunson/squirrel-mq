@@ -1,5 +1,5 @@
 import pg from 'pg';
-import { b as Field, C as CustomField, E as ExtractFieldType } from './types-A55kQuZm.cjs';
+import { b as Field, C as CustomField, E as ExtractFieldType } from './types-W554HBlq.js';
 
 type FieldSchema = {
     table_catalog: string;

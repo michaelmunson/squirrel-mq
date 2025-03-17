@@ -33,6 +33,7 @@ __export(schema_exports, {
   BOOLEAN: () => BOOLEAN,
   ENUM: () => ENUM,
   INTEGER: () => INTEGER,
+  JSONB: () => JSONB,
   PK_AUTO_INT: () => PK_AUTO_INT,
   PK_AUTO_UUID: () => PK_AUTO_UUID,
   PostgresTableMap: () => PostgresTableMap,
@@ -99,6 +100,10 @@ var TIMESTAMP = (options) => ({
 var ENUM = (value, options) => ({
   type: "ENUM",
   argument: value,
+  options
+});
+var JSONB = (options) => ({
+  type: "JSONB",
   options
 });
 
@@ -381,6 +386,7 @@ var generateSchemaSql = (schema, config3) => {
   BOOLEAN,
   ENUM,
   INTEGER,
+  JSONB,
   PK_AUTO_INT,
   PK_AUTO_UUID,
   PostgresTableMap,

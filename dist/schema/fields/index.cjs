@@ -23,6 +23,7 @@ __export(fields_exports, {
   BOOLEAN: () => BOOLEAN,
   ENUM: () => ENUM,
   INTEGER: () => INTEGER,
+  JSONB: () => JSONB,
   PK_AUTO_INT: () => PK_AUTO_INT,
   PK_AUTO_UUID: () => PK_AUTO_UUID,
   SERIAL: () => SERIAL,
@@ -86,11 +87,16 @@ var ENUM = (value, options) => ({
   argument: value,
   options
 });
+var JSONB = (options) => ({
+  type: "JSONB",
+  options
+});
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   BOOLEAN,
   ENUM,
   INTEGER,
+  JSONB,
   PK_AUTO_INT,
   PK_AUTO_UUID,
   SERIAL,

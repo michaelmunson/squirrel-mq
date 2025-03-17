@@ -1,5 +1,5 @@
 import express, { RequestHandler, Request } from 'express';
-import { S as SchemaInput, f as PgClient, g as PgClientParams } from './types-3bJz3i28.js';
+import { S as SchemaInput, f as PgClient, g as PgClientParams } from './types-Drqv8FGe.js';
 
 type RequestHandlerParams = Parameters<RequestHandler>;
 type JsonMiddlewareReturn = ((body: any) => any) | [statusCode: number, bodyFn: ((body: any) => any)] | Readonly<[statusCode: number, bodyFn: ((body: any) => any)]> | void;
@@ -60,7 +60,7 @@ declare class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExten
      * api.hasRoute('/users');
      * ```
      */
-    hasRoute(path: string): any;
+    hasRoute(path: string, method: HTTPMethod): any;
     /**
      * @description Remove the API's prefix from a path
      * @example

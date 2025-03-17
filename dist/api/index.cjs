@@ -108,7 +108,7 @@ dotenv2.config();
 function createGetRoute(api, name, table) {
   const columns = Object.keys(table).join(", ");
   const route = `${api.config.prefix}/${name}/:id`;
-  if (!api.hasRoute(route))
+  if (!api.hasRoute(route, "GET"))
     api.app.get(route, async (req, res) => {
       try {
         const statement = sql`
@@ -132,24 +132,28 @@ function createGetRoute(api, name, table) {
 // src/api/routes/default/post.ts
 var createPostRoute = (api, name, table) => {
   const route = `${api.config.prefix}/${name}`;
-  if (!api.hasRoute(route)) api.app.post(route, async (req, res) => {
-    try {
-      let iterator = 1;
-      const columns = Object.keys(req.body);
-      const values = Object.values(req.body);
-      const valuesParams = values.map(() => `$${iterator++}`).join(", ");
-      let statement = sql`
-        INSERT INTO ${name} (${columns.join(", ")})
-        VALUES (${valuesParams})
-        RETURNING *;
-      `;
-      const result = await api.client.query(statement, values);
-      res.status(201).json(result.rows[0]);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
-    }
-  });
+  if (!api.hasRoute(route, "POST")) {
+    api.app.post(route, async (req, res) => {
+      try {
+        let iterator = 1;
+        const columns = Object.keys(req.body);
+        const values = Object.values(req.body).map(modifyValue);
+        const valuesParams = values.map(() => `$${iterator++}`).join(", ");
+        let statement = sql`
+          INSERT INTO ${name} (${columns.join(", ")})
+          VALUES (${valuesParams})
+          RETURNING *;
+        `;
+        const result = await api.client.query(statement, values);
+        res.status(201).json(result.rows[0]);
+      } catch (err) {
+        if (process.env.VERBOSE === "true") console.log(err);
+        res.status(500).json(err);
+      }
+    });
+  } else {
+    if (process.env.VERBOSE === "true") console.log(`POST ${name} already exists`);
+  }
 };
 
 // src/api/routes/default/all.ts
@@ -215,7 +219,7 @@ var getFilterStatements = (filter, index = 3) => {
 var createAllRoute = (api, name, table) => {
   const columns = Object.keys(table).join(", ");
   const route = `${api.config.prefix}/${name}`;
-  if (!api.hasRoute(route))
+  if (!api.hasRoute(route, "GET"))
     api.app.get(route, async (req, res) => {
       try {
         const { page = api.config.pagination?.defaultPage ?? 1, limit = api.config.pagination?.defaultLimit ?? 10, filter = "{}" } = req.query;
@@ -230,7 +234,7 @@ var createAllRoute = (api, name, table) => {
         const result = await api.client.query(statement, values);
         res.status(200).json(result.rows);
       } catch (err) {
-        console.error(err);
+        if (process.env.VERBOSE === "true") console.error(err);
         res.status(500).json(err);
       }
     });
@@ -239,12 +243,12 @@ var createAllRoute = (api, name, table) => {
 // src/api/routes/default/patch.ts
 var createPatchRoute = (api, name, table) => {
   const route = `${api.config.prefix}/${name}/:id`;
-  if (!api.hasRoute(route)) api.app.patch(route, async (req, res) => {
+  if (!api.hasRoute(route, "PATCH")) api.app.patch(route, async (req, res) => {
     try {
       let iterator = 2;
       const id = req.params.id;
       const setStatment = Object.keys(req.body).map((key) => `${key} = $${iterator++}`).join(", ");
-      const values = Object.values(req.body);
+      const values = Object.values(req.body).map(modifyValue);
       const statement = sql`
         UPDATE ${name} SET ${setStatment} WHERE id = $1;
         RETURNING *;
@@ -252,7 +256,7 @@ var createPatchRoute = (api, name, table) => {
       const result = await api.client.query(statement, [id, ...values]);
       res.status(200).json(result.rows[0]);
     } catch (err) {
-      console.log(err);
+      if (process.env.VERBOSE === "true") console.log(err);
       res.status(500).json(err);
     }
   });
@@ -261,7 +265,7 @@ var createPatchRoute = (api, name, table) => {
 // src/api/routes/default/delete.ts
 var createDeleteRoute = (api, name, table) => {
   const route = `${api.config.prefix}/${name}/:id`;
-  if (!api.hasRoute(route)) api.app.delete(route, async (req, res) => {
+  if (!api.hasRoute(route, "DELETE")) api.app.delete(route, async (req, res) => {
     try {
       const id = req.params.id;
       const statement = sql`
@@ -277,13 +281,21 @@ var createDeleteRoute = (api, name, table) => {
         res.status(200).json(rows[0]);
       }
     } catch (err) {
-      console.log(err);
+      if (process.env.VERBOSE === "true") console.log(err);
       res.status(500).json(err);
     }
   });
 };
 
 // src/api/routes/utils.ts
+var modifyValue = (value) => {
+  if (Array.isArray(value)) {
+    return `{${value.join(",")}}`;
+  } else if (value?.toString() === "[object Object]") {
+    return JSON.stringify(value);
+  }
+  return value;
+};
 var createDefaultRoutes = (api, name, table) => {
   createAllRoute(api, name, table);
   createGetRoute(api, name, table);
@@ -453,8 +465,8 @@ var API = class {
    * api.hasRoute('/users');
    * ```
    */
-  hasRoute(path) {
-    return this.app._router.stack.some((route) => route.route?.path === path);
+  hasRoute(path, method) {
+    return this.app._router.stack.some((route) => route.route?.path === path && route.route?.methods[method]);
   }
   /**
    * @description Remove the API's prefix from a path
@@ -544,7 +556,7 @@ var API = class {
   async start() {
     await this.client.connect();
     this.initialize();
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.app.listen(this.config.port, (...args) => {
         resolve(...args);
       });
