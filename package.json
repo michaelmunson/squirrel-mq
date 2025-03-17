@@ -1,11 +1,10 @@
 {
   "name": "squirrelify",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "PostgreSQL framework for bootstrapping your database, api, and client",
   "main": "dist/index.js",
-  "files": [
-    "dist/**/*"
-  ],
+  "type": "module",
+  "module": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
     "./schema": "./dist/schema/index.js",

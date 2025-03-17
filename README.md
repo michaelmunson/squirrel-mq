@@ -33,17 +33,17 @@ const tableDefaults = {
 
 export const schema = {
   users: {
-    id: AUTO_ID(),
+    id: PK_AUTO_UUID(),
     name: VARCHAR(255, {nullable: false}),
     email: VARCHAR(255),
     age: INTEGER(),
     ...tableDefaults
   },
   posts: {
-    id: AUTO_ID(),
+    id: PK_AUTO_UUID(),
     title: VARCHAR(255),
     content: TEXT(),
-    user_id: INTEGER({
+    user_id: UUID({
       references: 'users(id)',
     }),
     ...tableDefaults
@@ -74,7 +74,7 @@ import { createApi, handler as $ } from "squirrel-mq/api";
 const api = createApi(
   schema,
   ({client}) => ({
-    '/example-users': {
+    'example-users': {
       get: $<Schema['users'][]>(async (req, res) => {
         const users = await client.query('SELECT * FROM users WHERE email ilike $1', [`%example.com%`]);
         res.status(200).json(users.rows);
@@ -96,6 +96,20 @@ const api = createApi(
     }
   }
 );
+
+api.auth(client => async (req, res, next) => {
+  const unauthorized = () => <const>[401, () => ({error: 'Unauthorized'})];
+  const isOp = api.createOpChecker(req);
+  const token = req.headers['authorization'];
+  const {path} = api.describeRequest(req)
+  // Do not use a users email as your auth token, just an example
+  const user: Schema['users'] = await client.query('select * from users where email = $1', [token]).then(({rows}) => rows[0]);
+  if (!user) return unauthorized(); 
+  if (isOp('users/:id', 'GET')) {
+    if (user.id.toString() !== path.split('/').pop())
+      return unauthorized();
+  }
+});
 
 export default api;
 ```
