@@ -8,7 +8,8 @@ import express from "express";
 import * as dotenv2 from "dotenv";
 
 // src/pg/pg.ts
-import { Client as PgClient } from "pg";
+import pg from "pg";
+var PgClient = pg.Client;
 
 // src/utils/utils.ts
 var isObject = (value) => typeof value === "object" && value?.toString() === "[object Object]";

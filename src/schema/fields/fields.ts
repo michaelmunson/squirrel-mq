@@ -1,9 +1,5 @@
 import type { Field, CustomField, FieldOptions } from "./types";
 
-export const defaults = {
-    
-}
-
 export const SQL = <T>(sql:string) : CustomField<T> => ({type: '$', statement: sql})
 
 /**
@@ -36,7 +32,7 @@ export const PK_AUTO_UUID = (options?:FieldOptions<string,false>):Field<string,f
  * @description
  * - UUID
  */
-export const UUID = <N extends boolean>(options?:FieldOptions<string,N>):Field<string,N> => ({
+export const UUID = <N extends boolean, A extends boolean>(options?:FieldOptions<string,N,A>):Field<string,N,A> => ({
     type: 'UUID',
     options
 });
@@ -45,7 +41,7 @@ export const UUID = <N extends boolean>(options?:FieldOptions<string,N>):Field<s
  * @description
  * - Integer
  */
-export const INTEGER = <N extends boolean>(options?:FieldOptions<number,N>):Field<number,N> => <const>({
+export const INTEGER = <N extends boolean, A extends boolean>(options?:FieldOptions<number,N,A>):Field<number,N,A> => <const>({
     type: 'INTEGER',
     options
 });
@@ -54,7 +50,7 @@ export const INTEGER = <N extends boolean>(options?:FieldOptions<number,N>):Fiel
  * @description
  * - VARCHAR
  */
-export const VARCHAR = <N extends boolean>(value:number, options?:FieldOptions<string,N>):Field<string,N> => ({
+export const VARCHAR = <N extends boolean, A extends boolean>(value:number, options?:FieldOptions<string,N,A>):Field<string,N,A> => ({
     type: 'VARCHAR',
     argument: value,
     options
@@ -64,7 +60,7 @@ export const VARCHAR = <N extends boolean>(value:number, options?:FieldOptions<s
  * @description
  * - SERIAL
  */
-export const SERIAL = (options?:FieldOptions<number,false>):Field<number,false> => ({
+export const SERIAL = <N extends boolean, A extends boolean>(options?:FieldOptions<number,N,A>):Field<number,N,A> => ({
     type: 'SERIAL',
     options
 });
@@ -73,7 +69,7 @@ export const SERIAL = (options?:FieldOptions<number,false>):Field<number,false> 
  * @description
  * - TEXT
  */
-export const TEXT = <N extends boolean>(options?:FieldOptions<string,N>):Field<string,N> => ({
+export const TEXT = <N extends boolean, A extends boolean>(options?:FieldOptions<string,N,A>):Field<string,N,A> => ({
     type: 'TEXT',
     options
 });
@@ -82,7 +78,7 @@ export const TEXT = <N extends boolean>(options?:FieldOptions<string,N>):Field<s
  * @description
  * - BOOLEAN
  */
-export const BOOLEAN = <N extends boolean>(options?:FieldOptions<boolean,N>):Field<boolean,N> => ({
+export const BOOLEAN = <N extends boolean, A extends boolean>(options?:FieldOptions<boolean,N,A>):Field<boolean,N,A> => ({
     type: 'BOOLEAN',
     options
 });
@@ -91,7 +87,7 @@ export const BOOLEAN = <N extends boolean>(options?:FieldOptions<boolean,N>):Fie
  * @description
  * - TIMESTAMP
  */
-export const TIMESTAMP = <N extends boolean>(options?:FieldOptions<string,N>):Field<string,N> => ({
+export const TIMESTAMP = <N extends boolean, A extends boolean>(options?:FieldOptions<string,N,A>):Field<string,N,A> => ({
     type: 'TIMESTAMP',
     options
 });

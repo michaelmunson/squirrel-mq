@@ -1,8 +1,9 @@
-import { Client as PgClient } from "pg";
+// import { Client as PgClient } from "pg";
+import pg from 'pg';
+
+export const PgClient = pg.Client;
 
 export type PgClientParams = ConstructorParameters<typeof PgClient>[0];
-
-export {PgClient};
 
 /**
  * 

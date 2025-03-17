@@ -1,8 +1,8 @@
-import { A as API, a as ApiExtensionRecord, L as ListParams, k as ApiExtensionMethods } from '../extensions-CrVf6jLh.cjs';
-import { c as SchemaType } from '../types-UfZShx_W.cjs';
+import { A as API, a as ApiExtensionRecord, L as ListParams, k as ApiExtensionMethods } from '../extensions-B8frMPjN.cjs';
+import { c as SchemaType } from '../types-2zreMSQi.cjs';
 import { RequestHandler } from 'express';
 import 'pg';
-import '../types-D26UMB4E.cjs';
+import '../types-A55kQuZm.cjs';
 
 type ClientCustomRoutes<M extends ApiExtensionMethods> = {
     [K in keyof M]: M[K] extends RequestHandler<infer _, infer Output, infer Input> ? (Input extends undefined ? () => Promise<Output> : (input: Input) => Promise<Output>) : never;

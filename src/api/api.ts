@@ -27,7 +27,7 @@ const DEFAULT_CONFIG: APIConfig = {
  */
 export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtensionFunction = ApiExtensionFunction> {
   readonly app: express.Application;
-  readonly client: PgClient;
+  readonly client: InstanceType<typeof PgClient>;
   config: APIConfig = DEFAULT_CONFIG;
   readonly extensionFn: ExtensionFn;
   constructor(readonly schema: Schema, extensionFn: ExtensionFn, config: APIConfig = DEFAULT_CONFIG) {
@@ -207,7 +207,7 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
     });
    * ```
    */
-  auth(handlerOne: (client: PgClient) => JsonMiddleware) {
+  auth(handlerOne: (client: InstanceType<typeof PgClient>) => JsonMiddleware) {
     const handler = handlerOne(this.client);
     this.app.use(
       createJsonMiddleware(async function (req, res, next) {

@@ -22,5 +22,5 @@ export const fieldToSqlType = (field: Field<any,any> | CustomField<any>) : strin
   if (field.type === '$') {
     return field.statement;
   }
-  return `${field.type}${field.argument ? `(${field.argument})` : ''} ${fieldOptionsToSql(field.options ?? {})}`;
+  return `${field.type}${field.options?.array ? '[]' : ''}${field.argument ? `(${field.argument})` : ''} ${fieldOptionsToSql(field.options ?? {})}`;
 }

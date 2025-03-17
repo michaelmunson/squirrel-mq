@@ -1,5 +1,4 @@
 // src/schema/fields/fields.ts
-var defaults = {};
 var SQL = (sql) => ({ type: "$", statement: sql });
 var PK_AUTO_INT = (options) => ({
   type: "INTEGER",
@@ -62,7 +61,6 @@ export {
   TEXT,
   TIMESTAMP,
   UUID,
-  VARCHAR,
-  defaults
+  VARCHAR
 };
 //# sourceMappingURL=index.js.map

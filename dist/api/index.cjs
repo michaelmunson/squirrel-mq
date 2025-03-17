@@ -49,7 +49,8 @@ var import_express = __toESM(require("express"), 1);
 var dotenv2 = __toESM(require("dotenv"), 1);
 
 // src/pg/pg.ts
-var import_pg = require("pg");
+var import_pg = __toESM(require("pg"), 1);
+var PgClient = import_pg.default.Client;
 
 // src/utils/utils.ts
 var isObject = (value) => typeof value === "object" && value?.toString() === "[object Object]";
@@ -358,7 +359,7 @@ var API = class {
     app.use(import_express.default.json());
     app.use(import_express.default.urlencoded({ extended: true }));
     this.app = app;
-    this.client = new import_pg.Client(config4.client);
+    this.client = new PgClient(config4.client);
     this.extensionFn = extensionFn;
   }
   app;

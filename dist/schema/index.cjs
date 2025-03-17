@@ -43,7 +43,6 @@ __export(schema_exports, {
   TableMap: () => TableMap,
   UUID: () => UUID,
   VARCHAR: () => VARCHAR,
-  defaults: () => defaults,
   deploySchema: () => deploySchema,
   generateSchemaSql: () => generateSchemaSql,
   initializeSchema: () => initializeSchema
@@ -51,7 +50,6 @@ __export(schema_exports, {
 module.exports = __toCommonJS(schema_exports);
 
 // src/schema/fields/fields.ts
-var defaults = {};
 var SQL = (sql2) => ({ type: "$", statement: sql2 });
 var PK_AUTO_INT = (options) => ({
   type: "INTEGER",
@@ -120,7 +118,8 @@ var PostgresTableMap = class extends Map {
 var dotenv2 = __toESM(require("dotenv"), 1);
 
 // src/pg/pg.ts
-var import_pg = require("pg");
+var import_pg = __toESM(require("pg"), 1);
+var PgClient = import_pg.default.Client;
 
 // src/utils/utils.ts
 var sql = (template, ...args) => {
@@ -135,7 +134,7 @@ var SqrlClientError = class extends Error {
     super(message);
   }
 };
-var SqrlPgClient = class extends import_pg.Client {
+var SqrlPgClient = class extends PgClient {
   connected = false;
   constructor(params) {
     super(params);
@@ -197,7 +196,7 @@ var fieldToSqlType = (field) => {
   if (field.type === "$") {
     return field.statement;
   }
-  return `${field.type}${field.argument ? `(${field.argument})` : ""} ${fieldOptionsToSql(field.options ?? {})}`;
+  return `${field.type}${field.options?.array ? "[]" : ""}${field.argument ? `(${field.argument})` : ""} ${fieldOptionsToSql(field.options ?? {})}`;
 };
 
 // src/schema/codegen/table.ts
@@ -392,7 +391,6 @@ var generateSchemaSql = (schema, config3) => {
   TableMap,
   UUID,
   VARCHAR,
-  defaults,
   deploySchema,
   generateSchemaSql,
   initializeSchema

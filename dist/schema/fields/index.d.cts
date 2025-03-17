@@ -1,7 +1,6 @@
-import { C as CustomField, F as FieldOptions, b as Field } from '../../types-D26UMB4E.cjs';
-export { D as DefaultOptions, c as ExtractFieldArgument, E as ExtractFieldType, a as Type, T as TypeMap } from '../../types-D26UMB4E.cjs';
+import { C as CustomField, F as FieldOptions, b as Field } from '../../types-A55kQuZm.cjs';
+export { D as DefaultOptions, c as ExtractFieldArgument, E as ExtractFieldType, a as Type, T as TypeMap } from '../../types-A55kQuZm.cjs';
 
-declare const defaults: {};
 declare const SQL: <T>(sql: string) => CustomField<T>;
 /**
  * @description
@@ -17,37 +16,37 @@ declare const PK_AUTO_UUID: (options?: FieldOptions<string, false>) => Field<str
  * @description
  * - UUID
  */
-declare const UUID: <N extends boolean>(options?: FieldOptions<string, N>) => Field<string, N>;
+declare const UUID: <N extends boolean, A extends boolean>(options?: FieldOptions<string, N, A>) => Field<string, N, A>;
 /**
  * @description
  * - Integer
  */
-declare const INTEGER: <N extends boolean>(options?: FieldOptions<number, N>) => Field<number, N>;
+declare const INTEGER: <N extends boolean, A extends boolean>(options?: FieldOptions<number, N, A>) => Field<number, N, A>;
 /**
  * @description
  * - VARCHAR
  */
-declare const VARCHAR: <N extends boolean>(value: number, options?: FieldOptions<string, N>) => Field<string, N>;
+declare const VARCHAR: <N extends boolean, A extends boolean>(value: number, options?: FieldOptions<string, N, A>) => Field<string, N, A>;
 /**
  * @description
  * - SERIAL
  */
-declare const SERIAL: (options?: FieldOptions<number, false>) => Field<number, false>;
+declare const SERIAL: <N extends boolean, A extends boolean>(options?: FieldOptions<number, N, A>) => Field<number, N, A>;
 /**
  * @description
  * - TEXT
  */
-declare const TEXT: <N extends boolean>(options?: FieldOptions<string, N>) => Field<string, N>;
+declare const TEXT: <N extends boolean, A extends boolean>(options?: FieldOptions<string, N, A>) => Field<string, N, A>;
 /**
  * @description
  * - BOOLEAN
  */
-declare const BOOLEAN: <N extends boolean>(options?: FieldOptions<boolean, N>) => Field<boolean, N>;
+declare const BOOLEAN: <N extends boolean, A extends boolean>(options?: FieldOptions<boolean, N, A>) => Field<boolean, N, A>;
 /**
  * @description
  * - TIMESTAMP
  */
-declare const TIMESTAMP: <N extends boolean>(options?: FieldOptions<string, N>) => Field<string, N>;
+declare const TIMESTAMP: <N extends boolean, A extends boolean>(options?: FieldOptions<string, N, A>) => Field<string, N, A>;
 /**
  * @description
  * - ENUM
@@ -58,4 +57,4 @@ declare const ENUM: <T extends readonly string[], N extends boolean>(value: T, o
     options: FieldOptions<T[number], N> | undefined;
 };
 
-export { BOOLEAN, CustomField, ENUM, Field, FieldOptions, INTEGER, PK_AUTO_INT, PK_AUTO_UUID, SERIAL, SQL, TEXT, TIMESTAMP, UUID, VARCHAR, defaults };
+export { BOOLEAN, CustomField, ENUM, Field, FieldOptions, INTEGER, PK_AUTO_INT, PK_AUTO_UUID, SERIAL, SQL, TEXT, TIMESTAMP, UUID, VARCHAR };

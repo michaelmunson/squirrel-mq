@@ -13,7 +13,7 @@ type TypeMap = {
     UUID: string;
 };
 type Type = keyof TypeMap;
-type FieldOptions<T, Nullable extends boolean = true> = {
+type FieldOptions<T, Nullable extends boolean = true, IsArray extends boolean = false> = {
     default?: T;
     nullable?: Nullable;
     unique?: boolean;
@@ -22,18 +22,19 @@ type FieldOptions<T, Nullable extends boolean = true> = {
     withTimezone?: boolean;
     generatedAlwaysAsIdentity?: boolean;
     generatedByDefaultAsIdentity?: boolean;
+    array?: IsArray;
 };
-type Field<T, Nullable extends boolean = true> = {
+type Field<T, Nullable extends boolean = true, IsArray extends boolean = false> = {
     type: Type;
     argument?: any;
-    options?: FieldOptions<T, Nullable>;
+    options?: FieldOptions<T, Nullable, IsArray>;
 };
 type CustomField<T = any> = {
     type: '$';
     value?: T;
     statement: string;
 };
-type ExtractFieldType<F extends Field<any, any> | CustomField<any>> = (F extends Field<infer T, infer N> ? (T | (N extends true ? null : never)) : (F extends CustomField<infer T> ? T : never));
+type ExtractFieldType<F extends Field<any, any> | CustomField<any>> = (F extends Field<infer T, infer N, infer A> ? ((A extends true ? T[] : T) | (N extends true ? null : never)) : (F extends CustomField<infer T> ? T : never));
 type ExtractFieldArgument<F extends Field<any, any>> = F extends Field<infer _, infer A> ? A : never;
 type DefaultOptions = {
     'CURRENT_TIMESTAMP': string;

@@ -1,5 +1,5 @@
-import { Client } from 'pg';
-import { b as Field, C as CustomField, E as ExtractFieldType } from './types-D26UMB4E.cjs';
+import pg from 'pg';
+import { b as Field, C as CustomField, E as ExtractFieldType } from './types-A55kQuZm.cjs';
 
 type FieldSchema = {
     table_catalog: string;
@@ -48,16 +48,17 @@ type FieldSchema = {
     is_updatable: string;
 };
 
-type TableInput = Record<string, Field<any, any> | CustomField<any>>;
+type TableInput = Record<string, Field<any, any, any> | CustomField<any>>;
 type Table<T extends TableInput = TableInput> = T;
-declare class TableMap extends Map<string, Field<any, any>> {
+declare class TableMap extends Map<string, Field<any, any, any>> {
     constructor(tableMap: TableMap);
 }
 declare class PostgresTableMap extends Map<string, FieldSchema> {
     constructor(tableMap: PostgresTableMap);
 }
 
-type PgClientParams = ConstructorParameters<typeof Client>[0];
+declare const PgClient: typeof pg.Client;
+type PgClientParams = ConstructorParameters<typeof PgClient>[0];
 
 type SchemaInput = Record<string, Table>;
 type SchemaType<T extends SchemaInput> = {
@@ -72,4 +73,4 @@ declare class PostgresSchemaMap extends Map<string, PostgresTableMap> {
     constructor(schemaMap: PostgresSchemaMap);
 }
 
-export { PostgresTableMap as P, type SchemaInput as S, type TableInput as T, type Table as a, TableMap as b, type SchemaType as c, SchemaMap as d, PostgresSchemaMap as e, type PgClientParams as f };
+export { PostgresTableMap as P, type SchemaInput as S, type TableInput as T, type Table as a, TableMap as b, type SchemaType as c, SchemaMap as d, PostgresSchemaMap as e, PgClient as f, type PgClientParams as g };

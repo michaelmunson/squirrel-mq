@@ -1,5 +1,4 @@
 // src/schema/fields/fields.ts
-var defaults = {};
 var SQL = (sql2) => ({ type: "$", statement: sql2 });
 var PK_AUTO_INT = (options) => ({
   type: "INTEGER",
@@ -68,7 +67,8 @@ var PostgresTableMap = class extends Map {
 import * as dotenv2 from "dotenv";
 
 // src/pg/pg.ts
-import { Client as PgClient } from "pg";
+import pg from "pg";
+var PgClient = pg.Client;
 
 // src/utils/utils.ts
 var sql = (template, ...args) => {
@@ -145,7 +145,7 @@ var fieldToSqlType = (field) => {
   if (field.type === "$") {
     return field.statement;
   }
-  return `${field.type}${field.argument ? `(${field.argument})` : ""} ${fieldOptionsToSql(field.options ?? {})}`;
+  return `${field.type}${field.options?.array ? "[]" : ""}${field.argument ? `(${field.argument})` : ""} ${fieldOptionsToSql(field.options ?? {})}`;
 };
 
 // src/schema/codegen/table.ts
@@ -339,7 +339,6 @@ export {
   TableMap,
   UUID,
   VARCHAR,
-  defaults,
   deploySchema,
   generateSchemaSql,
   initializeSchema

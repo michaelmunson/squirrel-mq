@@ -15,7 +15,7 @@ export type TypeMap = {
 
 export type Type = keyof TypeMap
 
-export type FieldOptions<T, Nullable extends boolean = true> = {
+export type FieldOptions<T, Nullable extends boolean = true, IsArray extends boolean = false> = {
   default?: T
   nullable?: Nullable
   unique?: boolean
@@ -24,12 +24,13 @@ export type FieldOptions<T, Nullable extends boolean = true> = {
   withTimezone?: boolean,
   generatedAlwaysAsIdentity?: boolean,
   generatedByDefaultAsIdentity?: boolean,
+  array?: IsArray
 }
 
-export type Field<T, Nullable extends boolean = true> = {
+export type Field<T, Nullable extends boolean = true, IsArray extends boolean = false> = {
   type: Type
   argument?: any
-  options?: FieldOptions<T, Nullable>
+  options?: FieldOptions<T, Nullable, IsArray>
 }
 
 export type CustomField<T=any> = {
@@ -39,8 +40,8 @@ export type CustomField<T=any> = {
 }
 
 export type ExtractFieldType<F extends Field<any,any> | CustomField<any>> = (
-  F extends Field<infer T, infer N> ? (
-    T | (N extends true ? null : never)
+  F extends Field<infer T, infer N, infer A> ? (
+    (A extends true ? T[] : T) | (N extends true ? null : never)
   ) : (
     F extends CustomField<infer T> ? T : never
   )

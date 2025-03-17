@@ -1,6 +1,5 @@
 import express, { RequestHandler, Request } from 'express';
-import { Client } from 'pg';
-import { S as SchemaInput, f as PgClientParams } from './types-DZcucQnq.js';
+import { S as SchemaInput, f as PgClient, g as PgClientParams } from './types-3bJz3i28.js';
 
 type RequestHandlerParams = Parameters<RequestHandler>;
 type JsonMiddlewareReturn = ((body: any) => any) | [statusCode: number, bodyFn: ((body: any) => any)] | Readonly<[statusCode: number, bodyFn: ((body: any) => any)]> | void;
@@ -14,7 +13,7 @@ type JsonMiddleware = (...args: RequestHandlerParams) => JsonMiddlewareReturn | 
 declare class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtensionFunction = ApiExtensionFunction> {
     readonly schema: Schema;
     readonly app: express.Application;
-    readonly client: Client;
+    readonly client: InstanceType<typeof PgClient>;
     config: APIConfig;
     readonly extensionFn: ExtensionFn;
     constructor(schema: Schema, extensionFn: ExtensionFn, config?: APIConfig);
@@ -110,7 +109,7 @@ declare class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExten
       });
      * ```
      */
-    auth(handlerOne: (client: Client) => JsonMiddleware): void;
+    auth(handlerOne: (client: InstanceType<typeof PgClient>) => JsonMiddleware): void;
     /**
      * @description Start the API Server
      * @example

@@ -30,13 +30,11 @@ __export(fields_exports, {
   TEXT: () => TEXT,
   TIMESTAMP: () => TIMESTAMP,
   UUID: () => UUID,
-  VARCHAR: () => VARCHAR,
-  defaults: () => defaults
+  VARCHAR: () => VARCHAR
 });
 module.exports = __toCommonJS(fields_exports);
 
 // src/schema/fields/fields.ts
-var defaults = {};
 var SQL = (sql) => ({ type: "$", statement: sql });
 var PK_AUTO_INT = (options) => ({
   type: "INTEGER",
@@ -100,7 +98,6 @@ var ENUM = (value, options) => ({
   TEXT,
   TIMESTAMP,
   UUID,
-  VARCHAR,
-  defaults
+  VARCHAR
 });
 //# sourceMappingURL=index.cjs.map
