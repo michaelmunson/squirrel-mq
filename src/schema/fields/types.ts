@@ -11,6 +11,7 @@ export type TypeMap = {
   SERIAL: number
   TEXT: string
   UUID: string
+  JSONB: Record<any, any>
 }
 
 export type Type = keyof TypeMap
@@ -39,7 +40,7 @@ export type CustomField<T=any> = {
   statement: string
 }
 
-export type ExtractFieldType<F extends Field<any,any> | CustomField<any>> = (
+export type ExtractFieldType<F extends Field<any,any,any> | CustomField<any>> = (
   F extends Field<infer T, infer N, infer A> ? (
     (A extends true ? T[] : T) | (N extends true ? null : never)
   ) : (
@@ -47,7 +48,7 @@ export type ExtractFieldType<F extends Field<any,any> | CustomField<any>> = (
   )
 )
 
-export type ExtractFieldArgument<F extends Field<any,any>> = F extends Field<infer _, infer A> ? A : never;
+export type ExtractFieldArgument<F extends Field<any,any,any>> = F extends Field<infer _, infer A, infer _> ? A : never;
 
 export type DefaultOptions = {
   'CURRENT_TIMESTAMP': string

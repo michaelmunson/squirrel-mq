@@ -9,6 +9,9 @@ export const modifyValue = (value: any) => {
   if (Array.isArray(value)) {
     return `{${value.join(',')}}`;
   }
+  else if (value?.toString() === '[object Object]') {
+    return JSON.stringify(value);
+  }
   return value;
 }
 
