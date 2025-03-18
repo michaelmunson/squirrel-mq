@@ -78,6 +78,13 @@ export async function initializeSchema(...params: ConstructorParameters<typeof S
  * @description 
  * - Deploys the schema
  * - This method preserves existing tables and only adds/removes/updates columns
+ * @env ```
+    PGUSER=
+    PGPASSWORD=
+    PGDATABASE=
+    PGHOST=
+    PGPORT=
+  ```
  */
 export async function deploySchema(...params: ConstructorParameters<typeof SchemaDeployer>) {
   const deployer = new SchemaDeployer(...params);

@@ -366,18 +366,14 @@ var DEFAULT_CONFIG = {
 var API = class {
   constructor(schema, extensionFn, config4 = DEFAULT_CONFIG) {
     this.schema = schema;
+    this.extensionFn = extensionFn;
     this.config = mergeDeep(DEFAULT_CONFIG, config4);
-    const app = (0, import_express.default)();
-    app.use(import_express.default.json());
-    app.use(import_express.default.urlencoded({ extended: true }));
-    this.app = app;
-    this.client = new PgClient(config4.client);
     this.extensionFn = extensionFn;
   }
-  app;
-  client;
+  app = void 0;
+  client = void 0;
   config = DEFAULT_CONFIG;
-  extensionFn;
+  authHandler;
   initDefaultRoutes() {
     Object.entries(this.schema).forEach(([name, table]) => {
       createDefaultRoutes(this, name, table);
@@ -411,7 +407,17 @@ var API = class {
       this.app.use(caseConversionMiddleware({ inCase, outCase }));
     }
   }
+  initAuth() {
+    if (!this.authHandler) return;
+    const handler2 = this.authHandler(this.client);
+    this.app.use(
+      createJsonMiddleware(async function(req, res, next) {
+        return await handler2(req, res, next);
+      })
+    );
+  }
   initialize() {
+    this.initAuth();
     this.initMiddleware();
     this.initExtensions();
     this.initDefaultRoutes();
@@ -531,13 +537,8 @@ var API = class {
     });
    * ```
    */
-  auth(handlerOne) {
-    const handler2 = handlerOne(this.client);
-    this.app.use(
-      createJsonMiddleware(async function(req, res, next) {
-        return await handler2(req, res, next);
-      })
-    );
+  auth(handler2) {
+    this.authHandler = handler2;
   }
   /**
    * @description Start the API Server
@@ -554,6 +555,11 @@ var API = class {
    * ```
    */
   async start() {
+    const app = (0, import_express.default)();
+    app.use(import_express.default.json());
+    app.use(import_express.default.urlencoded({ extended: true }));
+    this.app = app;
+    this.client = new PgClient(this.config.client);
     await this.client.connect();
     this.initialize();
     return new Promise((resolve) => {

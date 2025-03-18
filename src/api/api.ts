@@ -1,4 +1,4 @@
-import express, {Request, RequestHandler} from 'express';
+import express, {Request} from 'express';
 import { SchemaInput } from '../schema';
 import { APIConfig, ApiExtensionFunction, APIRoutes, APIRouteMethods, APIRoute, HTTPMethod, HTTP_METHODS } from './types';
 import { PgClient } from '../pg';
@@ -26,17 +26,13 @@ const DEFAULT_CONFIG: APIConfig = {
  * ---
  */
 export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtensionFunction = ApiExtensionFunction> {
-  readonly app: express.Application;
-  readonly client: InstanceType<typeof PgClient>;
+  app: express.Application = undefined as unknown as express.Application;
+  client: InstanceType<typeof PgClient> = undefined as unknown as InstanceType<typeof PgClient>;
   config: APIConfig = DEFAULT_CONFIG;
-  readonly extensionFn: ExtensionFn;
-  constructor(readonly schema: Schema, extensionFn: ExtensionFn, config: APIConfig = DEFAULT_CONFIG) {
+  private authHandler: ((client: InstanceType<typeof PgClient>) => JsonMiddleware) | undefined;
+  constructor(readonly schema: Schema, readonly extensionFn: ExtensionFn, config: APIConfig = DEFAULT_CONFIG) {
     this.config = mergeDeep(DEFAULT_CONFIG, config);
-    const app = express();
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-    this.app = app;
-    this.client = new PgClient(config.client);
+
     this.extensionFn = extensionFn;
   }
 
@@ -76,7 +72,18 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
     }
   }
 
+  private initAuth(){
+    if (!this.authHandler) return;
+    const handler = this.authHandler(this.client);
+    this.app.use(
+      createJsonMiddleware(async function (req, res, next) {
+        return await handler(req, res, next);
+      })
+    );
+  }
+
   private initialize() {
+    this.initAuth();
     this.initMiddleware();
     this.initExtensions();
     this.initDefaultRoutes();
@@ -207,13 +214,8 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
     });
    * ```
    */
-  auth(handlerOne: (client: InstanceType<typeof PgClient>) => JsonMiddleware) {
-    const handler = handlerOne(this.client);
-    this.app.use(
-      createJsonMiddleware(async function (req, res, next) {
-        return await handler(req, res, next);
-      })
-    );
+  auth(handler: (client: InstanceType<typeof PgClient>) => JsonMiddleware) {
+    this.authHandler = handler;
   }
 
   /**
@@ -231,6 +233,11 @@ export class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtens
    * ```
    */
   async start(): Promise<Error | undefined> {
+    const app = express();
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    this.app = app;
+    this.client = new PgClient(this.config.client);
     await this.client.connect();
     this.initialize();
     return new Promise((resolve) => {

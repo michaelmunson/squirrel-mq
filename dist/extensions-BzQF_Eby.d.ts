@@ -1,5 +1,5 @@
 import express, { RequestHandler, Request } from 'express';
-import { S as SchemaInput, f as PgClient, g as PgClientParams } from './types-Dw9Q3g5N.cjs';
+import { S as SchemaInput, f as PgClient, g as PgClientParams } from './types-Drqv8FGe.js';
 
 type RequestHandlerParams = Parameters<RequestHandler>;
 type JsonMiddlewareReturn = ((body: any) => any) | [statusCode: number, bodyFn: ((body: any) => any)] | Readonly<[statusCode: number, bodyFn: ((body: any) => any)]> | void;
@@ -12,14 +12,16 @@ type JsonMiddleware = (...args: RequestHandlerParams) => JsonMiddlewareReturn | 
  */
 declare class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExtensionFunction = ApiExtensionFunction> {
     readonly schema: Schema;
-    readonly app: express.Application;
-    readonly client: InstanceType<typeof PgClient>;
-    config: APIConfig;
     readonly extensionFn: ExtensionFn;
+    app: express.Application;
+    client: InstanceType<typeof PgClient>;
+    config: APIConfig;
+    private authHandler;
     constructor(schema: Schema, extensionFn: ExtensionFn, config?: APIConfig);
     private initDefaultRoutes;
     private initExtensions;
     private initMiddleware;
+    private initAuth;
     private initialize;
     /**
      * @description
@@ -109,7 +111,7 @@ declare class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExten
       });
      * ```
      */
-    auth(handlerOne: (client: InstanceType<typeof PgClient>) => JsonMiddleware): void;
+    auth(handler: (client: InstanceType<typeof PgClient>) => JsonMiddleware): void;
     /**
      * @description Start the API Server
      * @example

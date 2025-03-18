@@ -1,4 +1,4 @@
-import { A as API, a as ApiExtensionRecord, L as ListParams, k as ApiExtensionMethods } from '../extensions-C1ilDI-4.cjs';
+import { A as API, a as ApiExtensionRecord, L as ListParams, k as ApiExtensionMethods } from '../extensions-DnMUsiF4.cjs';
 import { c as SchemaType } from '../types-Dw9Q3g5N.cjs';
 import { RequestHandler } from 'express';
 import 'pg';

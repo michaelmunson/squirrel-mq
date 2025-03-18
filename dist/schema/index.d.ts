@@ -60,6 +60,13 @@ declare function initializeSchema(...params: ConstructorParameters<typeof Schema
  * @description
  * - Deploys the schema
  * - This method preserves existing tables and only adds/removes/updates columns
+ * @env ```
+    PGUSER=
+    PGPASSWORD=
+    PGDATABASE=
+    PGHOST=
+    PGPORT=
+  ```
  */
 declare function deploySchema(...params: ConstructorParameters<typeof SchemaDeployer>): Promise<Map<string, Error | QueryResult<any>>>;
 
