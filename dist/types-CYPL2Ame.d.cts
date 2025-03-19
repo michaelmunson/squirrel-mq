@@ -1,5 +1,5 @@
+import { S as SchemaInput, f as PgClient, g as PgClientParams } from './types-Dw9Q3g5N.cjs';
 import express, { RequestHandler, Request } from 'express';
-import { S as SchemaInput, f as PgClient, g as PgClientParams } from './types-Drqv8FGe.js';
 
 type RequestHandlerParams = Parameters<RequestHandler>;
 type JsonMiddlewareReturn = ((body: any) => any) | [statusCode: number, bodyFn: ((body: any) => any)] | Readonly<[statusCode: number, bodyFn: ((body: any) => any)]> | void;
@@ -182,6 +182,32 @@ declare class API<Schema extends SchemaInput = any, ExtensionFn extends ApiExten
  */
 declare const createApi: <Schema extends SchemaInput, ExtensionFn extends ApiExtensionFunction>(schema: Schema, extensionFn: ExtensionFn, config?: APIConfig) => API<Schema, ExtensionFn>;
 
+type ApiExtensionMethods = Partial<{
+    get: RequestHandler<any, any, any>;
+    post: RequestHandler<any, any, any>;
+    patch: RequestHandler<any, any, any>;
+    delete: RequestHandler<any, any, any>;
+    put: RequestHandler<any, any, any>;
+}>;
+/**
+ * @description A record of API extension methods that can be used to extend the API
+ * @note The keys of the record must not start with a slash
+ * @example
+ * const api = createApi(schema, (api) => ({
+ *   'my-extension': {
+ *     get: () => {
+ *       return 'Hello World';
+ *     }
+ *   }
+ * }))
+ */
+type ApiExtensionRecord = {
+    [k: string]: ApiExtensionMethods;
+} & {
+    [K in `/${string}`]: never;
+};
+type ApiExtensionFunction = (self: API) => ApiExtensionRecord;
+
 declare const HTTP_METHODS: readonly ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT"];
 type HTTPMethod = typeof HTTP_METHODS[number];
 type AllQuery = {
@@ -271,30 +297,4 @@ type APIRouteMethods<T extends API> = T extends API<infer S, infer E> ? (keyof S
     };
 } : never) : never;
 
-type ApiExtensionMethods = Partial<{
-    get: RequestHandler<any, any, any>;
-    post: RequestHandler<any, any, any>;
-    patch: RequestHandler<any, any, any>;
-    delete: RequestHandler<any, any, any>;
-    put: RequestHandler<any, any, any>;
-}>;
-/**
- * @description A record of API extension methods that can be used to extend the API
- * @note The keys of the record must not start with a slash
- * @example
- * const api = createApi(schema, (api) => ({
- *   'my-extension': {
- *     get: () => {
- *       return 'Hello World';
- *     }
- *   }
- * }))
- */
-type ApiExtensionRecord = {
-    [k: string]: ApiExtensionMethods;
-} & {
-    [K in `/${string}`]: never;
-};
-type ApiExtensionFunction = (self: API) => ApiExtensionRecord;
-
-export { API as A, type FilterOperator as F, HTTP_METHODS as H, type ListParams as L, type ApiExtensionRecord as a, type HTTPMethod as b, type AllQuery as c, type Filter as d, type FilterParams as e, type APIConfig as f, type APISchema as g, type APIRoute as h, type APIRoutes as i, type APIRouteMethods as j, type ApiExtensionMethods as k, type ApiExtensionFunction as l, createApi as m };
+export { API as A, type FilterOperator as F, HTTP_METHODS as H, type ListParams as L, type ApiExtensionRecord as a, type ApiExtensionFunction as b, type APIConfig as c, type HTTPMethod as d, type AllQuery as e, type Filter as f, type FilterParams as g, type APISchema as h, type APIRoute as i, type APIRoutes as j, type APIRouteMethods as k, type ApiExtensionMethods as l, createApi as m };

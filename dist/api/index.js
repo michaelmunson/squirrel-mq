@@ -311,6 +311,12 @@ var createJsonMiddleware = (handler2) => {
 var getFullPath = (path, prefix = "/api") => {
   return `${prefix}${path.startsWith("/") ? "" : "/"}${path}`;
 };
+var createApiExtension = (extensionFn) => {
+  return extensionFn;
+};
+var createApiConfig = (config4) => {
+  return config4;
+};
 
 // src/api/api.ts
 dotenv3.config();
@@ -535,6 +541,8 @@ export {
   API,
   HTTP_METHODS,
   createApi,
+  createApiConfig,
+  createApiExtension,
   createDefaultRoutes,
   createRoutes,
   handler

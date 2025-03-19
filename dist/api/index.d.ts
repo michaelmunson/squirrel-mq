@@ -1,5 +1,5 @@
-import { A as API, a as ApiExtensionRecord } from '../extensions-BzQF_Eby.js';
-export { f as APIConfig, h as APIRoute, j as APIRouteMethods, i as APIRoutes, g as APISchema, c as AllQuery, l as ApiExtensionFunction, k as ApiExtensionMethods, d as Filter, F as FilterOperator, e as FilterParams, b as HTTPMethod, H as HTTP_METHODS, L as ListParams, m as createApi } from '../extensions-BzQF_Eby.js';
+import { A as API, a as ApiExtensionRecord, b as ApiExtensionFunction, c as APIConfig } from '../types-8Jcq-6ay.js';
+export { i as APIRoute, k as APIRouteMethods, j as APIRoutes, h as APISchema, e as AllQuery, l as ApiExtensionMethods, f as Filter, F as FilterOperator, g as FilterParams, d as HTTPMethod, H as HTTP_METHODS, L as ListParams, m as createApi } from '../types-8Jcq-6ay.js';
 import * as qs from 'qs';
 import { a as Table } from '../types-Drqv8FGe.js';
 import { RequestHandler } from 'express';
@@ -48,4 +48,7 @@ declare const createDefaultRoutes: (api: API, name: string, table: Table) => voi
 declare const createRoutes: <T extends ApiExtensionRecord>(ext: T) => T;
 declare const handler: <Output, Input = undefined>(reqFn: RequestHandler<any, Output, Input>) => RequestHandler<any, Output, Input, qs.ParsedQs, Record<string, any>>;
 
-export { API, ApiExtensionRecord, createDefaultRoutes, createRoutes, handler };
+declare const createApiExtension: <E extends ApiExtensionFunction>(extensionFn: E) => E;
+declare const createApiConfig: (config: APIConfig) => APIConfig;
+
+export { API, APIConfig, ApiExtensionFunction, ApiExtensionRecord, createApiConfig, createApiExtension, createDefaultRoutes, createRoutes, handler };

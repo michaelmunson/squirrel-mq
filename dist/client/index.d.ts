@@ -1,5 +1,5 @@
-import { A as API, a as ApiExtensionRecord, L as ListParams, k as ApiExtensionMethods } from '../extensions-BzQF_Eby.js';
-import { c as SchemaType } from '../types-Drqv8FGe.js';
+import { A as API, a as ApiExtensionRecord, L as ListParams, l as ApiExtensionMethods, b as ApiExtensionFunction, c as APIConfig } from '../types-8Jcq-6ay.js';
+import { c as SchemaType, S as SchemaInput } from '../types-Drqv8FGe.js';
 import { RequestHandler } from 'express';
 import 'pg';
 import '../types-W554HBlq.js';
@@ -32,33 +32,33 @@ type ApiClient<T extends API> = BaseApiClient<ApiSchema<T>, ApiExtensions<T>>;
  * Create a frontend client for the API, allowing easy access to the API's models and custom routes.
  * @example
  * ```ts
-  import { createClient } from "squirrel-mq/client";
-  import api from "./api";
+  import { createClient } from "squirrelify/client";
+  import { extensions, config} from "./api";
+  import { schema } from "./schema";
 
-  const client = createClient(api, {
+  const client = createClient({schema, extensions, config}, {
     baseUrl: 'http://localhost:3000/',
     headers: {
       'Authorization': 'Bearer 1234567890',
     }
   });
 
-  client.models.posts.get(1).then(r => console.log(r));
+  client.models.posts.get('abc-12').then(r => console.log(r));
 
-  client.models.posts.create({
-    title: 'My Post',
-    content: 'This is a post',
-  }).then(r => console.log(r));
-
-  client.custom('/example-users').post({
+  client.custom('example-users').post({
     age: 20,
     name: 'John Doe',
     email: 'john.doe@example.com',
-    id: 1,
+    id: 'abc-123',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   }).then(r => console.log(r));
   ```
  */
-declare const createClient: <A extends API>(api: A, config: ApiClientConfig) => ApiClient<A>;
+declare const createClient: <S extends SchemaInput, E extends ApiExtensionFunction>(api: {
+    schema: S;
+    extensions: E;
+    config: APIConfig;
+}, config: ApiClientConfig) => ApiClient<API<S, E>>;
 
 export { type ApiClient, type ApiClientConfig, type ApiExtensions, type ApiSchema, type BaseApiClient, createClient };

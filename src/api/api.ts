@@ -1,6 +1,6 @@
 import express, {Request} from 'express';
 import { SchemaInput } from '../schema';
-import { APIConfig, ApiExtensionFunction, APIRoutes, APIRouteMethods, APIRoute, HTTPMethod, HTTP_METHODS } from './types';
+import { APIConfig, ApiExtensionFunction, APIRoute, HTTPMethod, HTTP_METHODS } from './types';
 import { PgClient } from '../pg';
 import { createDefaultRoutes } from './routes/utils';
 import * as dotenv from 'dotenv';

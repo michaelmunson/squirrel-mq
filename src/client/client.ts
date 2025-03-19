@@ -1,45 +1,42 @@
-import { API } from "../api";
+import { API, APIConfig, ApiExtensionFunction } from "../api";
 import { ApiClient, ApiClientConfig, ApiExtensions, ApiSchema } from "./types";
 import { getUrl } from "../utils";
+import { SchemaInput } from "../schema";
 
 /**
  * @description 
  * Create a frontend client for the API, allowing easy access to the API's models and custom routes.
  * @example
  * ```ts
-  import { createClient } from "squirrel-mq/client";
-  import api from "./api";
+  import { createClient } from "squirrelify/client";
+  import { extensions, config} from "./api";
+  import { schema } from "./schema";
 
-  const client = createClient(api, {
+  const client = createClient({schema, extensions, config}, {
     baseUrl: 'http://localhost:3000/',
     headers: {
       'Authorization': 'Bearer 1234567890',
     }
   });
 
-  client.models.posts.get(1).then(r => console.log(r));
+  client.models.posts.get('abc-12').then(r => console.log(r));
 
-  client.models.posts.create({
-    title: 'My Post',
-    content: 'This is a post',
-  }).then(r => console.log(r));
-
-  client.custom('/example-users').post({
+  client.custom('example-users').post({
     age: 20,
     name: 'John Doe',
     email: 'john.doe@example.com',
-    id: 1,
+    id: 'abc-123',
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(), 
+    updated_at: new Date().toISOString(),
   }).then(r => console.log(r));
   ```
  */
-export const createClient = <A extends API>(api: A, config: ApiClientConfig) : ApiClient<A> => {
+export const createClient = <S extends SchemaInput, E extends ApiExtensionFunction>(api:{schema:S, extensions:E, config:APIConfig}, config: ApiClientConfig) : ApiClient<API<S, E>> => {
   config.baseUrl = getUrl(config.baseUrl, api.config.prefix ?? '')
   const schema = api.schema;
-  const client:ApiClient<A> = {
+  const client:ApiClient<API<S, E>> = {
     models: {},
-    custom: (route:keyof ApiExtensions<A>) => ({
+    custom: (route:keyof ApiExtensions<API<S, E>>) => ({
       get: () => fetch(getUrl(route as string, config.baseUrl), {
         method: 'GET',
         headers: config.headers,
@@ -75,7 +72,7 @@ export const createClient = <A extends API>(api: A, config: ApiClientConfig) : A
   } as any;
 
   for (const key in schema) {
-    client.models[key as keyof ApiSchema<A>] = {
+    client.models[key as keyof ApiSchema<API<S, E>>] = {
       get(id) {
         const url = `${config.baseUrl}/${key as string}/${id}`;
         return fetch(url, {
@@ -123,3 +120,4 @@ export const createClient = <A extends API>(api: A, config: ApiClientConfig) : A
   }
   return client;
 }
+

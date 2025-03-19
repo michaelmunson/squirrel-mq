@@ -1,5 +1,6 @@
 import { PgClientParams } from "../../pg";
 import { API } from "../api";
+export * from "./extensions";
 
 export const HTTP_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD', 'TRACE', 'CONNECT'] as const;
 

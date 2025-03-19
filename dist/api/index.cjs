@@ -33,6 +33,8 @@ __export(api_exports, {
   API: () => API,
   HTTP_METHODS: () => HTTP_METHODS,
   createApi: () => createApi,
+  createApiConfig: () => createApiConfig,
+  createApiExtension: () => createApiExtension,
   createDefaultRoutes: () => createDefaultRoutes,
   createRoutes: () => createRoutes,
   handler: () => handler
@@ -352,6 +354,12 @@ var createJsonMiddleware = (handler2) => {
 var getFullPath = (path, prefix = "/api") => {
   return `${prefix}${path.startsWith("/") ? "" : "/"}${path}`;
 };
+var createApiExtension = (extensionFn) => {
+  return extensionFn;
+};
+var createApiConfig = (config4) => {
+  return config4;
+};
 
 // src/api/api.ts
 dotenv3.config();
@@ -577,6 +585,8 @@ var createApi = (schema, extensionFn, config4 = DEFAULT_CONFIG) => {
   API,
   HTTP_METHODS,
   createApi,
+  createApiConfig,
+  createApiExtension,
   createDefaultRoutes,
   createRoutes,
   handler
