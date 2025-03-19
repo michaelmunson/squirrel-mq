@@ -1,5 +1,5 @@
-import { A as API, a as ApiExtensionRecord, L as ListParams, l as ApiExtensionMethods, b as ApiExtensionFunction, c as APIConfig } from '../types-8Jcq-6ay.js';
 import { c as SchemaType, S as SchemaInput } from '../types-Drqv8FGe.js';
+import { A as API, a as ApiExtensionRecord, L as ListParams, l as ApiExtensionMethods } from '../types-8Jcq-6ay.js';
 import { RequestHandler } from 'express';
 import 'pg';
 import '../types-W554HBlq.js';
@@ -55,10 +55,6 @@ type ApiClient<T extends API> = BaseApiClient<ApiSchema<T>, ApiExtensions<T>>;
   }).then(r => console.log(r));
   ```
  */
-declare const createClient: <S extends SchemaInput, E extends ApiExtensionFunction>(api: {
-    schema: S;
-    extensions: E;
-    config: APIConfig;
-}, config: ApiClientConfig) => ApiClient<API<S, E>>;
+declare const createClient: <A extends API>(schema: SchemaInput, config: ApiClientConfig) => ApiClient<A>;
 
 export { type ApiClient, type ApiClientConfig, type ApiExtensions, type ApiSchema, type BaseApiClient, createClient };

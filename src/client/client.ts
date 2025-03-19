@@ -1,7 +1,7 @@
 import { API, APIConfig, ApiExtensionFunction } from "../api";
 import { ApiClient, ApiClientConfig, ApiExtensions, ApiSchema } from "./types";
 import { getUrl } from "../utils";
-import { SchemaInput } from "../schema";
+import { SchemaInput, SchemaType } from "../schema";
 
 /**
  * @description 
@@ -31,12 +31,11 @@ import { SchemaInput } from "../schema";
   }).then(r => console.log(r));
   ```
  */
-export const createClient = <S extends SchemaInput, E extends ApiExtensionFunction>(api:{schema:S, extensions:E, config:APIConfig}, config: ApiClientConfig) : ApiClient<API<S, E>> => {
-  config.baseUrl = getUrl(config.baseUrl, api.config.prefix ?? '')
-  const schema = api.schema;
-  const client:ApiClient<API<S, E>> = {
+export const createClient = <A extends API>(schema:SchemaInput, config:ApiClientConfig) : ApiClient<A> => {
+  config.baseUrl = getUrl(config.baseUrl)
+  const client:ApiClient<A> = {
     models: {},
-    custom: (route:keyof ApiExtensions<API<S, E>>) => ({
+    custom: (route:keyof ApiExtensions<A>) => ({
       get: () => fetch(getUrl(route as string, config.baseUrl), {
         method: 'GET',
         headers: config.headers,
@@ -72,7 +71,7 @@ export const createClient = <S extends SchemaInput, E extends ApiExtensionFuncti
   } as any;
 
   for (const key in schema) {
-    client.models[key as keyof ApiSchema<API<S, E>>] = {
+    client.models[key as keyof ApiSchema<A>] = {
       get(id) {
         const url = `${config.baseUrl}/${key as string}/${id}`;
         return fetch(url, {
@@ -120,4 +119,3 @@ export const createClient = <S extends SchemaInput, E extends ApiExtensionFuncti
   }
   return client;
 }
-

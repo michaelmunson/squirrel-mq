@@ -33,9 +33,8 @@ var getUrl = (...paths) => {
 };
 
 // src/client/client.ts
-var createClient = (api, config) => {
-  config.baseUrl = getUrl(config.baseUrl, api.config.prefix ?? "");
-  const schema = api.schema;
+var createClient = (schema, config) => {
+  config.baseUrl = getUrl(config.baseUrl);
   const client = {
     models: {},
     custom: (route) => ({
