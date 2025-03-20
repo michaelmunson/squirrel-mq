@@ -18,22 +18,32 @@ type TypeName = keyof BuiltInTypes;
 
 type SimpleExtractType<T extends string> = Uppercase<T> extends TypeName ? BuiltInTypes[Uppercase<T>] : never;
 
-type ExtractTypeRecursive<T extends string> = (
-  T extends `${infer BaseType}[]` ? ExtractTypeRecursive<BaseType>[] :
+type ExtractBaseType<T extends string> = (
   T extends `${infer TN} ${infer Rest}` ? (
-    SimpleExtractType<TN> | ExtractTypeRecursive<Rest>
+    SimpleExtractType<TN> | ExtractBaseType<Rest>
   ) : T extends TypeName ? SimpleExtractType<T> : never
+) | (
+  T extends `${infer TN}(${infer Rest}` ? (
+    ExtractBaseType<TN>
+  ) : never
 );
 
-export type ExtractType<T extends string> = (
-  ExtractTypeRecursive<T>
-) | (
-  Uppercase<T> extends `${string}NOT NULL${string}` ? 
-  never 
-  : Uppercase<T> extends `${string}PRIMARY KEY${string}` ?
+type ExtractNullableModifier<T extends string> = (
+  Uppercase<T> extends `${infer BaseType}NOT NULL${infer Rest}` ? 
+  never
+  : Uppercase<T> extends `${infer BaseType}PRIMARY KEY${infer Rest}` ?
   never
   : null
-);
+)
+
+type ExtractCompleteType<T extends string> = (
+  T extends `${infer Type}[]${infer Rest}`
+  ? ExtractBaseType<Type>[]
+  :  ExtractBaseType<T>
+) | ExtractNullableModifier<T>
+
+
+export type ExtractType<T extends string> = ExtractCompleteType<Uppercase<T>>
 
 
 export type ExtractName<T extends string> = T extends `${infer Name} ${infer _}` ? (
@@ -41,8 +51,17 @@ export type ExtractName<T extends string> = T extends `${infer Name} ${infer _}`
   // Field<Name, ExtractType<Rest>>
 ) : never;
 
-class Field<Name extends string, Rest extends string, Type extends ExtractType<Uppercase<Rest>>> {
+class Column<Name extends string, Rest extends string, Type extends ExtractType<Rest> = ExtractType<Rest>> {
   constructor(public field: `${Name} ${Rest}`) {}
+  default(value:Type){
+    return this
+  }
 }
 
-const f = new Field('users integer not null')
+const table = <T extends [...string[]]>(...columns: T) : {
+  [K in keyof T]: T extends `${infer Name} ${infer Rest}` ? [type:ExtractType<Rest>, name:ExtractName<Name>] : never
+} => [] as any
+
+type ExtractColumn<T extends string> = T extends `${infer Name} ${infer Rest}` ? [name:Name, type:ExtractType<Rest>] : never
+
+const c = new Column('users text[]').default([''])
