@@ -19,12 +19,15 @@ type TypeName = keyof BuiltInTypes;
 type SimpleExtractType<T extends string> = Uppercase<T> extends TypeName ? BuiltInTypes[Uppercase<T>] : never;
 
 type ExtractTypeRecursive<T extends string> = (
+  T extends `${infer BaseType}[]` ? ExtractTypeRecursive<BaseType>[] :
   T extends `${infer TN} ${infer Rest}` ? (
     SimpleExtractType<TN> | ExtractTypeRecursive<Rest>
   ) : T extends TypeName ? SimpleExtractType<T> : never
 );
 
-export type ExtractType<T extends string> = ExtractTypeRecursive<T> | (
+export type ExtractType<T extends string> = (
+  ExtractTypeRecursive<T>
+) | (
   Uppercase<T> extends `${string}NOT NULL${string}` ? 
   never 
   : Uppercase<T> extends `${string}PRIMARY KEY${string}` ?
@@ -32,8 +35,9 @@ export type ExtractType<T extends string> = ExtractTypeRecursive<T> | (
   : null
 );
 
-export type ExtractField<T extends string> = T extends `${infer Name} ${infer Rest}` ? (
-  [field: Name, type: ExtractType<Rest>]
+
+export type ExtractName<T extends string> = T extends `${infer Name} ${infer _}` ? (
+  Name
   // Field<Name, ExtractType<Rest>>
 ) : never;
 
@@ -41,3 +45,4 @@ class Field<Name extends string, Rest extends string, Type extends ExtractType<U
   constructor(public field: `${Name} ${Rest}`) {}
 }
 
+const f = new Field('users integer not null')
