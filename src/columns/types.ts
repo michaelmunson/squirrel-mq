@@ -1,3 +1,5 @@
+import { sql } from "../../src.old";
+
 type BuiltInTypes = {
   INTEGER: number;
   VARCHAR: string;
@@ -59,9 +61,16 @@ class Column<Name extends string, Rest extends string, Type extends ExtractType<
 }
 
 const table = <T extends [...string[]]>(...columns: T) : {
-  [K in keyof T]: T extends `${infer Name} ${infer Rest}` ? [type:ExtractType<Rest>, name:ExtractName<Name>] : never
-} => [] as any
+  [K in keyof T]: T[K] extends `${infer Name} ${infer Rest}` ? Column<Name, Rest> : never
+} => [] as any;
 
-type ExtractColumn<T extends string> = T extends `${infer Name} ${infer Rest}` ? [name:Name, type:ExtractType<Rest>] : never
 
-const c = new Column('users text[]').default([''])
+const t = table(
+  sql`users text[]`,
+  sql`id integer`,
+  sql`name varchar(255)`,
+  sql`email varchar(255)`,
+  sql`password varchar(255)`,
+  sql`created_at timestamp`,
+  sql`updated_at timestamp`,
+)
