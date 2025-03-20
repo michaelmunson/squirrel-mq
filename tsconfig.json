@@ -9,6 +9,6 @@
         "strict": true,
         "downlevelIteration": true
     },
-    "include": ["src"],
+    "include": ["src.old"],
     "exclude": ["node_modules", ".builder"]
 }

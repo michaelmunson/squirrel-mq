@@ -1,5 +1,5 @@
 
-import { generateSchemaSql, SchemaInput } from "../../../schema";
+import { generateSchemaSql, SchemaInput } from "../..";
 import { SqrlPgClient } from "../../../pg";
 import { SchemaChange, SchemaDeployerConfig } from "./types";
 import { getSchemaChangeset, DEFAULT_CONFIG, convertSchemaChangesetToSql } from "./utils";
