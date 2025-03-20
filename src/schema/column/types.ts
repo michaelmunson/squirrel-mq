@@ -1,5 +1,3 @@
-import { sql } from "../../src.old";
-
 type BuiltInTypes = {
   INTEGER: number;
   VARCHAR: string;
@@ -52,25 +50,3 @@ export type ExtractName<T extends string> = T extends `${infer Name} ${infer _}`
   Name
   // Field<Name, ExtractType<Rest>>
 ) : never;
-
-class Column<Name extends string, Rest extends string, Type extends ExtractType<Rest> = ExtractType<Rest>> {
-  constructor(public field: `${Name} ${Rest}`) {}
-  default(value:Type){
-    return this
-  }
-}
-
-const table = <T extends [...string[]]>(...columns: T) : {
-  [K in keyof T]: T[K] extends `${infer Name} ${infer Rest}` ? Column<Name, Rest> : never
-} => [] as any;
-
-
-const t = table(
-  sql`users text[]`,
-  sql`id integer`,
-  sql`name varchar(255)`,
-  sql`email varchar(255)`,
-  sql`password varchar(255)`,
-  sql`created_at timestamp`,
-  sql`updated_at timestamp`,
-)
